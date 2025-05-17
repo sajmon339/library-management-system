@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16.2-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: library_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - library-network
+
+  api:
+    build: ./backend/LibraryAPI
+    container_name: library_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=library_db;Username=admin;Password=admin
+    networks:
+      - library-network
+
+  frontend:
+    build: ./frontend/library-client
+    container_name: library_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - library-network
+
+networks:
+  library-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
