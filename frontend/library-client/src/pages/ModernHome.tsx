@@ -1,41 +1,30 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import { BookOpenIcon, ClockIcon, UserGroupIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
+import { bookService } from '../api/bookService.js';
+import { Book } from '../types/book.js';
 
 const ModernHome = () => {
   const { isAuthenticated, isAdmin } = useAuth();
+  const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock featured books data
-  const featuredBooks = [
-    {
-      id: 1,
-      title: "The Midnight Library",
-      author: "Matt Haig",
-      coverImage: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=700",
-      genre: "Fiction"
-    },
-    {
-      id: 2,
-      title: "Atomic Habits",
-      author: "James Clear",
-      coverImage: "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=700",
-      genre: "Self-Help"
-    },
-    {
-      id: 3,
-      title: "The Psychology of Money",
-      author: "Morgan Housel",
-      coverImage: "https://images.unsplash.com/photo-1589998059171-988d887df646?q=80&w=700",
-      genre: "Finance"
-    },
-    {
-      id: 4,
-      title: "Project Hail Mary",
-      author: "Andy Weir",
-      coverImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=700",
-      genre: "Science Fiction"
-    },
-  ];
+  // Fetch featured books (first 4 books from the API)
+  useEffect(() => {
+    const fetchFeaturedBooks = async () => {
+      try {
+        const books = await bookService.getAllBooks();
+        setFeaturedBooks(books.slice(0, 4)); // Take first 4 books
+      } catch (error) {
+        console.error('Error fetching featured books:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedBooks();
+  }, []);
 
   // Genre pills for quick access
   const genres = [
@@ -175,24 +164,68 @@ const ModernHome = () => {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredBooks.map((book) => (
-              <Link to={`/books/${book.id}`} key={book.id} className="group">
-                <div className="card h-full hover:shadow-lg overflow-hidden transition-all">
-                  <div className="h-64 overflow-hidden">
-                    <img 
-                      src={book.coverImage} 
-                      alt={book.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
+            {loading ? (
+              // Loading placeholders
+              Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="card h-full overflow-hidden animate-pulse">
+                  <div className="h-64 bg-neutral-200"></div>
                   <div className="p-5">
-                    <div className="text-xs font-medium text-primary-600 uppercase tracking-wide mb-1">{book.genre}</div>
-                    <h3 className="text-lg font-semibold text-neutral-900 mb-1 group-hover:text-primary-600 transition-colors">{book.title}</h3>
-                    <p className="text-neutral-600 text-sm">by {book.author}</p>
+                    <div className="h-3 w-1/3 bg-neutral-200 mb-2 rounded"></div>
+                    <div className="h-5 w-3/4 bg-neutral-200 mb-2 rounded"></div>
+                    <div className="h-4 w-1/2 bg-neutral-200 rounded"></div>
                   </div>
                 </div>
-              </Link>
-            ))}
+              ))
+            ) : (
+              featuredBooks.map((book) => (
+                <Link to={`/books/${book.id}`} key={book.id} className="group">
+                  <div className="card h-full hover:shadow-lg overflow-hidden transition-all">
+                    <div className="h-64 overflow-hidden">
+                      {book.coverImagePath ? (
+                        <img 
+                          src={bookService.getBookCover(book.id)} 
+                          alt={book.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            // Fallback to a placeholder on error
+                            const target = e.target as HTMLImageElement;
+                            target.onerror = null; // Prevent infinite error loop
+                            target.src = '/assets/placeholder-cover.svg';
+                            
+                            // Backup fallback in case placeholder image is missing
+                            target.onerror = () => {
+                              target.style.display = 'none';
+                              (target.parentNode as HTMLElement).innerHTML = `
+                                <div class="flex items-center justify-center h-full w-full bg-gradient-to-br from-primary-600 to-primary-400 p-6">
+                                  <div class="text-center text-white">
+                                    <h3 class="text-xl font-semibold mb-2">${book.title}</h3>
+                                    <p class="opacity-80">by ${book.author}</p>
+                                  </div>
+                                </div>
+                              `;
+                            };
+                          }}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full w-full bg-gradient-to-br from-primary-600 to-primary-400 p-6">
+                          <div className="text-center text-white">
+                            <h3 className="text-xl font-semibold mb-2">{book.title}</h3>
+                            <p className="opacity-80">by {book.author}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-5">
+                      <div className="text-xs font-medium text-primary-600 uppercase tracking-wide mb-1">
+                        {book.genre.replace(/([A-Z])/g, ' $1').trim()}
+                      </div>
+                      <h3 className="text-lg font-semibold text-neutral-900 mb-1 group-hover:text-primary-600 transition-colors">{book.title}</h3>
+                      <p className="text-neutral-600 text-sm">by {book.author}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
         </div>
       </section>

@@ -145,6 +145,36 @@ namespace LibraryAPI.Services
             }
         }
 
+        public async Task<CheckOut?> RenewCheckOutAsync(int checkOutId, int additionalDays = 14)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var checkOut = await _context.CheckOuts
+                    .Include(c => c.Book)
+                    .FirstOrDefaultAsync(c => c.Id == checkOutId);
+
+                if (checkOut == null || checkOut.Status != CheckOutStatus.Active)
+                {
+                    return null;
+                }
+
+                // Update checkout due date
+                checkOut.DueDate = DateTime.UtcNow.AddDays(additionalDays);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return checkOut;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
         public async Task<CheckOut?> UpdateCheckOutStatusAsync(int checkOutId, CheckOutStatus newStatus)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();

@@ -32,6 +32,7 @@ export interface Book {
   catalogNumber: string;
   totalCopies: number;
   availableCopies: number;
+  coverImagePath?: string;
 }
 
 export interface CreateBookDto {

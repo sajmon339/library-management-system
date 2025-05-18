@@ -157,7 +157,13 @@ namespace LibraryAPI.Controllers
                     return Unauthorized();
                 }
 
-                if (createCheckOutDto.UserId != currentUserId && !User.IsInRole("Admin"))
+                // If userId is 0, use the current user's ID extracted from the token
+                if (createCheckOutDto.UserId == 0)
+                {
+                    createCheckOutDto.UserId = currentUserId;
+                }
+                // Otherwise, check if the user is trying to check out a book for another user without admin rights
+                else if (createCheckOutDto.UserId != currentUserId && !User.IsInRole("Admin"))
                 {
                     return Forbid();
                 }
@@ -218,6 +224,37 @@ namespace LibraryAPI.Controllers
                 }
 
                 return Ok(MapToDto(returnedCheckOut));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("{id}/renew")]
+        public async Task<IActionResult> RenewCheckOut(int id)
+        {
+            try
+            {
+                var checkOut = await _checkOutService.GetCheckOutByIdAsync(id);
+                if (checkOut == null)
+                {
+                    return NotFound();
+                }
+
+                // Only admin can renew books for now
+                if (!User.IsInRole("Admin"))
+                {
+                    return Forbid();
+                }
+
+                var renewedCheckOut = await _checkOutService.RenewCheckOutAsync(id);
+                if (renewedCheckOut == null)
+                {
+                    return BadRequest("Unable to renew the checkout. It may already be returned or in another state.");
+                }
+
+                return Ok(MapToDto(renewedCheckOut));
             }
             catch (Exception ex)
             {

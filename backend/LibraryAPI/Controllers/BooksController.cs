@@ -238,7 +238,8 @@ namespace LibraryAPI.Controllers
                 }
                 
                 // Update book record with image path
-                await _bookService.UpdateCoverImagePathAsync(book.Id, filePath);
+                var webPath = $"/uploads/covers/{fileName}";
+                await _bookService.UpdateCoverImagePathAsync(book.Id, webPath);
                 
                 return Ok(new { message = "Cover image uploaded successfully" });
             }
@@ -260,32 +261,70 @@ namespace LibraryAPI.Controllers
                 }
                 
                 // Check if book has cover image
-                if (string.IsNullOrEmpty(book.CoverImagePath) || !System.IO.File.Exists(book.CoverImagePath))
+                if (string.IsNullOrEmpty(book.CoverImagePath))
                 {
                     // Return a placeholder image or not found
                     return NotFound("No cover image available");
                 }
                 
-                // Determine content type based on file extension
-                var contentType = "image/jpeg"; // Default to jpeg
-                var extension = Path.GetExtension(book.CoverImagePath).ToLowerInvariant();
-                
-                switch (extension)
+                // If the path starts with "/", it's a relative URL path, not a file system path
+                if (book.CoverImagePath.StartsWith("/"))
                 {
-                    case ".png":
-                        contentType = "image/png";
-                        break;
-                    case ".gif":
-                        contentType = "image/gif";
-                        break;
-                    case ".webp":
-                        contentType = "image/webp";
-                        break;
+                    // Create the physical path
+                    var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot", book.CoverImagePath.TrimStart('/'));
+                    
+                    if (!System.IO.File.Exists(filePath))
+                    {
+                        return NotFound("Cover file not found on disk");
+                    }
+                    
+                    // Determine content type based on file extension
+                    var contentType = "image/jpeg"; // Default to jpeg
+                    var extension = Path.GetExtension(filePath).ToLowerInvariant();
+                    
+                    switch (extension)
+                    {
+                        case ".png":
+                            contentType = "image/png";
+                            break;
+                        case ".gif":
+                            contentType = "image/gif";
+                            break;
+                        case ".webp":
+                            contentType = "image/webp";
+                            break;
+                    }
+                    
+                    // Return the image file
+                    var imageBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                    return File(imageBytes, contentType);
+                }
+                else if (System.IO.File.Exists(book.CoverImagePath))
+                {
+                    // For backward compatibility, in case some paths are still stored as absolute file paths
+                    // Determine content type based on file extension
+                    var contentType = "image/jpeg"; // Default to jpeg
+                    var extension = Path.GetExtension(book.CoverImagePath).ToLowerInvariant();
+                    
+                    switch (extension)
+                    {
+                        case ".png":
+                            contentType = "image/png";
+                            break;
+                        case ".gif":
+                            contentType = "image/gif";
+                            break;
+                        case ".webp":
+                            contentType = "image/webp";
+                            break;
+                    }
+                    
+                    // Return the image file
+                    var imageBytes = await System.IO.File.ReadAllBytesAsync(book.CoverImagePath);
+                    return File(imageBytes, contentType);
                 }
                 
-                // Return the image file
-                var imageBytes = await System.IO.File.ReadAllBytesAsync(book.CoverImagePath);
-                return File(imageBytes, contentType);
+                return NotFound("Cover image file not found");
             }
             catch (Exception ex)
             {

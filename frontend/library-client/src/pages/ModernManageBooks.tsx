@@ -170,7 +170,7 @@ const ModernManageBooks = () => {
       genre: book.genre
     });
     setIsEditFormVisible(true);
-    setImagePreview(`/api/books/${book.id}/cover`); // Assuming this endpoint exists or will be created
+    setImagePreview(bookService.getBookCover(book.id)); // Set image preview using the book service
   };
   
   const uploadCoverImage = async (bookId: number, file: File) => {
@@ -743,7 +743,7 @@ const ModernManageBooks = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="h-16 w-12 rounded overflow-hidden bg-neutral-100 flex items-center justify-center">
                           <img 
-                            src={`/api/books/${book.id}/cover`} 
+                            src={bookService.getBookCover(book.id)} 
                             alt={book.title}
                             onError={(e) => {
                               // Display placeholder icon if image fails to load

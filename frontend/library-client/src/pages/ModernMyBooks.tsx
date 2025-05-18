@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { checkOutService } from '../api/checkOutService.js';
+import { bookService } from '../api/bookService.js';
 import type { CheckOut } from '../types/checkOut.js';
+import CheckOutActionModal from '../components/CheckOutActionModal.js';
 import { 
   ArrowPathIcon, 
   ArrowUturnLeftIcon,
@@ -16,6 +18,8 @@ const ModernMyBooks = () => {
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<number | null>(null);
   const [actionSuccess, setActionSuccess] = useState<{id: number, action: string} | null>(null);
+  const [selectedCheckOut, setSelectedCheckOut] = useState<CheckOut | null>(null);
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   
   useEffect(() => {
     fetchCheckOuts();
@@ -74,6 +78,11 @@ const ModernMyBooks = () => {
     } finally {
       setActionLoading(null);
     }
+  };
+
+  const handleCheckOutAction = (checkOut: CheckOut) => {
+    setSelectedCheckOut(checkOut);
+    setIsActionModalOpen(true);
   };
   
   const formatDate = (dateString: string) => {
@@ -188,11 +197,35 @@ const ModernMyBooks = () => {
                     return (
                       <div key={checkOut.id} className="card overflow-hidden">
                         {/* Book cover/placeholder */}
-                        <div className="h-48 bg-gradient-to-r from-primary-600 to-primary-400 flex items-center justify-center p-6">
-                          <div className="text-center text-white">
-                            <h3 className="text-xl font-semibold mb-1">{checkOut.bookTitle}</h3>
-                            <p className="opacity-90">by {checkOut.catalogNumber}</p>
-                          </div>
+                        <div className="h-48 overflow-hidden">
+                          {checkOut.bookId ? (
+                            <img 
+                              src={bookService.getBookCover(checkOut.bookId)} 
+                              alt={checkOut.bookTitle}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                // Fallback to a gradient placeholder on error
+                                const target = e.target as HTMLImageElement;
+                                target.onerror = null; // Prevent infinite error loop
+                                target.style.display = 'none';
+                                (target.parentNode as HTMLElement).innerHTML = `
+                                  <div class="h-full w-full bg-gradient-to-r from-primary-600 to-primary-400 flex items-center justify-center p-6">
+                                    <div class="text-center text-white">
+                                      <h3 class="text-xl font-semibold mb-1">${checkOut.bookTitle}</h3>
+                                      <p class="opacity-90">by ${checkOut.catalogNumber}</p>
+                                    </div>
+                                  </div>
+                                `;
+                              }}
+                            />
+                          ) : (
+                            <div className="h-full bg-gradient-to-r from-primary-600 to-primary-400 flex items-center justify-center p-6">
+                              <div className="text-center text-white">
+                                <h3 className="text-xl font-semibold mb-1">{checkOut.bookTitle}</h3>
+                                <p className="opacity-90">by {checkOut.catalogNumber}</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
                         
                         <div className="p-5">
@@ -246,31 +279,9 @@ const ModernMyBooks = () => {
                           
                           <div className="flex space-x-3">
                             <button
-                              onClick={() => handleReturn(checkOut.id)}
+                              onClick={() => handleCheckOutAction(checkOut)}
                               disabled={actionLoading === checkOut.id}
-                              className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none"
-                            >
-                              {actionLoading === checkOut.id ? (
-                                <svg className="animate-spin h-4 w-4 text-neutral-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                              ) : (
-                                <>
-                                  <ArrowUturnLeftIcon className="h-4 w-4 mr-1" />
-                                  Return
-                                </>
-                              )}
-                            </button>
-                            
-                            <button
-                              onClick={() => handleRenew(checkOut.id)}
-                              disabled={actionLoading === checkOut.id || isOverdue}
-                              className={`flex-1 inline-flex justify-center items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium ${
-                                isOverdue
-                                  ? 'border-neutral-200 text-neutral-400 bg-neutral-50 cursor-not-allowed'
-                                  : 'border-primary-300 text-primary-700 bg-primary-50 hover:bg-primary-100 focus:outline-none'
-                              }`}
+                              className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-primary-300 rounded-md shadow-sm text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 focus:outline-none"
                             >
                               {actionLoading === checkOut.id ? (
                                 <svg className="animate-spin h-4 w-4 text-primary-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -279,8 +290,8 @@ const ModernMyBooks = () => {
                                 </svg>
                               ) : (
                                 <>
-                                  <ArrowPathIcon className="h-4 w-4 mr-1" />
-                                  Renew
+                                  <ClockIcon className="h-4 w-4 mr-1" />
+                                  Manage Book
                                 </>
                               )}
                             </button>
@@ -364,6 +375,25 @@ const ModernMyBooks = () => {
           </div>
         )}
       </div>
+      
+      {/* Action Modal for Return/Renew */}
+      <CheckOutActionModal
+        isOpen={isActionModalOpen}
+        onClose={() => setIsActionModalOpen(false)}
+        onReturn={() => {
+          if (selectedCheckOut) {
+            handleReturn(selectedCheckOut.id);
+            setIsActionModalOpen(false);
+          }
+        }}
+        onRenew={() => {
+          if (selectedCheckOut) {
+            handleRenew(selectedCheckOut.id);
+            setIsActionModalOpen(false);
+          }
+        }}
+        checkOut={selectedCheckOut}
+      />
     </div>
   );
 };

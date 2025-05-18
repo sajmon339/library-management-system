@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.js';
 import { bookService } from '../api/bookService.js';
 import { checkOutService } from '../api/checkOutService.js';
 import { Book } from '../types/book.js';
+import CheckOutModal from '../components/CheckOutModal.js';
 import { 
   CalendarIcon, 
   BookOpenIcon, 
@@ -20,6 +21,7 @@ const ModernBookDetail = () => {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
@@ -41,14 +43,19 @@ const ModernBookDetail = () => {
     fetchBook();
   }, [id]);
   
-  const handleCheckout = async () => {
+  const handleCheckoutButtonClick = () => {
+    setIsCheckoutModalOpen(true);
+  };
+  
+  const handleCheckout = async (daysToReturn: number = 14) => {
     if (!book || !isAuthenticated) return;
     
     setCheckoutLoading(true);
     setCheckoutError(null);
     
     try {
-      await checkOutService.createCheckOut(book.id);
+      console.log('Attempting to check out book:', book.id, 'for', daysToReturn, 'days');
+      await checkOutService.createCheckOut(book.id, daysToReturn);
       setCheckoutSuccess(true);
       
       // Update the book's available copies
@@ -57,9 +64,13 @@ const ModernBookDetail = () => {
         availableCopies: book.availableCopies - 1
       });
     } catch (err: any) {
-      setCheckoutError(err.response?.data || 'Failed to check out the book. Please try again.');
+      console.error('Error in handleCheckout:', err);
+      // Provide more detailed error information to the user
+      const errorMessage = err.response?.data || 'Failed to check out the book. Please try again.';
+      setCheckoutError(errorMessage);
     } finally {
       setCheckoutLoading(false);
+      setIsCheckoutModalOpen(false);
     }
   };
   
@@ -111,7 +122,7 @@ const ModernBookDetail = () => {
     return (
       <div className="mt-2">
         <button 
-          onClick={handleCheckout}
+          onClick={handleCheckoutButtonClick}
           disabled={checkoutLoading}
           className="btn btn-primary"
         >
@@ -182,11 +193,25 @@ const ModernBookDetail = () => {
           {/* Book cover/image column */}
           <div className="lg:col-span-1">
             <div className="bg-gradient-to-br from-primary-600 to-primary-400 aspect-[2/3] rounded-xl shadow-soft overflow-hidden flex items-center justify-center">
-              <div className="text-center text-white p-6">
-                <BookOpenIcon className="h-16 w-16 mx-auto mb-4 opacity-90" />
-                <h2 className="text-2xl font-bold mb-2">{book.title}</h2>
-                <p className="opacity-80">by {book.author}</p>
-              </div>
+              {book.coverImagePath ? (
+                <img 
+                  src={bookService.getBookCover(book.id)} 
+                  alt={`Cover of ${book.title}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback to the placeholder on error
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null; // Prevent infinite error loop
+                    target.src = '/assets/placeholder-cover.svg';
+                  }}
+                />
+              ) : (
+                <div className="text-center text-white p-6">
+                  <BookOpenIcon className="h-16 w-16 mx-auto mb-4 opacity-90" />
+                  <h2 className="text-2xl font-bold mb-2">{book.title}</h2>
+                  <p className="opacity-80">by {book.author}</p>
+                </div>
+              )}
             </div>
             
             <div className="mt-6">
@@ -299,6 +324,13 @@ const ModernBookDetail = () => {
           </div>
         </div>
       </div>
+      {/* Checkout Modal */}
+      <CheckOutModal
+        isOpen={isCheckoutModalOpen}
+        onClose={() => setIsCheckoutModalOpen(false)}
+        onConfirm={handleCheckout}
+        bookTitle={book?.title || ''}
+      />
     </div>
   );
 };

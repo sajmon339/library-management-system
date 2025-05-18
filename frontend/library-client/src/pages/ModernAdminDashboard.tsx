@@ -283,7 +283,7 @@ const ModernAdminDashboard = () => {
                       </div>
                     </Link>
                     
-                    <Link to="/admin/users" className="group p-5 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors">
+                    <Link to="/admin/users?add=true" className="group p-5 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors">
                       <div className="flex items-start">
                         <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center mr-4 group-hover:bg-primary-200 transition-colors">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 text-primary-600">

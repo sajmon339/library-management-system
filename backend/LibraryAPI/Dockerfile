@@ -16,4 +16,11 @@ RUN dotnet publish "LibraryAPI.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+
+# Ensure wwwroot directory exists
+RUN mkdir -p /app/wwwroot/uploads/covers
+
+# Copy book covers
+COPY ./wwwroot/uploads/covers /app/wwwroot/uploads/covers
+
 ENTRYPOINT ["dotnet", "LibraryAPI.dll"]

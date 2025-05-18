@@ -213,12 +213,32 @@ const ModernBooks = () => {
             {filteredBooks.map((book) => (
               <Link key={book.id} to={`/books/${book.id}`} className="group">
                 <div className="card h-full hover:shadow-lg overflow-hidden transition-all">
-                  {/* Fake book cover using a gradient based on the book's genre */}
+                  {/* Book cover - show actual cover if available, otherwise a gradient */}
                   <div className="h-64 overflow-hidden bg-gradient-to-br from-primary-600 to-primary-400 flex items-center justify-center p-6">
-                    <div className="text-center text-white">
-                      <h3 className="text-xl font-semibold mb-2">{book.title}</h3>
-                      <p className="opacity-80">by {book.author}</p>
-                    </div>
+                    {book.coverImagePath ? (
+                      <img 
+                        src={bookService.getBookCover(book.id)} 
+                        alt={`Cover of ${book.title}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to the placeholder on error
+                          const target = e.target as HTMLImageElement;
+                          target.onerror = null; // Prevent infinite error loop
+                          const element = document.createElement('div');
+                          element.className = 'text-center text-white';
+                          element.innerHTML = `
+                            <h3 class="text-xl font-semibold mb-2">${book.title}</h3>
+                            <p class="opacity-80">by ${book.author}</p>
+                          `;
+                          target.parentNode?.replaceChild(element, target);
+                        }}
+                      />
+                    ) : (
+                      <div className="text-center text-white">
+                        <h3 className="text-xl font-semibold mb-2">{book.title}</h3>
+                        <p className="opacity-80">by {book.author}</p>
+                      </div>
+                    )}
                   </div>
                   <div className="p-5">
                     <div className="flex justify-between items-start mb-2">

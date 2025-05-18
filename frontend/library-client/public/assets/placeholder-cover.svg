@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600">
+  <rect width="400" height="600" fill="#b8d9eb" stroke="#85c1e9" />
+  <rect x="40" y="40" width="320" height="520" fill="#d9edf7" stroke="#85c1e9" stroke-width="2" />
+  <text x="200" y="250" font-family="Arial, sans-serif" font-size="28" text-anchor="middle" fill="#2c3e50">Book Title</text>
+  <text x="200" y="300" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="#34495e">by Author Name</text>
+  <path d="M200,150 Q230,140 240,170 T280,190 Q300,200 280,220 T240,250 Q200,270 160,250 T120,220 Q100,200 120,190 T160,170 Q170,140 200,150" fill="#ffffff" stroke="#85c1e9" stroke-width="2" />
+</svg>

@@ -11,6 +11,7 @@ namespace LibraryAPI.Interfaces
         Task<CheckOut?> GetCheckOutByIdAsync(int id);
         Task<CheckOut> CheckOutBookAsync(int userId, int bookId, int daysToReturn = 14);
         Task<CheckOut?> ReturnBookAsync(int checkOutId);
+        Task<CheckOut?> RenewCheckOutAsync(int checkOutId, int additionalDays = 14);
         Task<CheckOut?> UpdateCheckOutStatusAsync(int checkOutId, CheckOutStatus newStatus);
     }
 }

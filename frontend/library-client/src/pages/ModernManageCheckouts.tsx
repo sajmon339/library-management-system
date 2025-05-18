@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { checkOutService } from '../api/checkOutService';
 import { CheckOutStatus } from '../types/checkOut';
 import type { CheckOut } from '../types/checkOut';
+import CheckOutActionModal from '../components/CheckOutActionModal.js';
 import { ArrowPathIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
 
 const ModernManageCheckouts = () => {
@@ -9,6 +10,8 @@ const ModernManageCheckouts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'active' | 'overdue'>('all');
+  const [selectedCheckOut, setSelectedCheckOut] = useState<CheckOut | null>(null);
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   
   useEffect(() => {
     fetchCheckouts();
@@ -76,6 +79,11 @@ const ModernManageCheckouts = () => {
       setError('Failed to renew checkout. Please try again.');
       console.error('Error renewing checkout:', err);
     }
+  };
+
+  const handleCheckOutAction = (checkOut: CheckOut) => {
+    setSelectedCheckOut(checkOut);
+    setIsActionModalOpen(true);
   };
   
   const formatDate = (dateString: string) => {
@@ -261,18 +269,13 @@ const ModernManageCheckouts = () => {
                           {!isReturned && (
                             <div className="flex justify-end space-x-2">
                               <button
-                                onClick={() => handleReturnBook(checkout.id)}
-                                className="inline-flex items-center p-1.5 border border-transparent rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                title="Return book"
-                              >
-                                <CheckCircleIcon className="h-5 w-5" />
-                              </button>
-                              <button
-                                onClick={() => handleRenewBook(checkout.id)}
+                                onClick={() => handleCheckOutAction(checkout)}
                                 className="inline-flex items-center p-1.5 border border-transparent rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                                title="Renew checkout"
+                                title="Manage checkout"
                               >
-                                <ArrowPathIcon className="h-5 w-5" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
                               </button>
                             </div>
                           )}
@@ -285,6 +288,25 @@ const ModernManageCheckouts = () => {
             </table>
           </div>
         </div>
+        
+        {/* Action Modal for Return/Renew */}
+        <CheckOutActionModal
+          isOpen={isActionModalOpen}
+          onClose={() => setIsActionModalOpen(false)}
+          onReturn={() => {
+            if (selectedCheckOut) {
+              handleReturnBook(selectedCheckOut.id);
+              setIsActionModalOpen(false);
+            }
+          }}
+          onRenew={() => {
+            if (selectedCheckOut) {
+              handleRenewBook(selectedCheckOut.id);
+              setIsActionModalOpen(false);
+            }
+          }}
+          checkOut={selectedCheckOut}
+        />
       </div>
     </div>
   );

@@ -237,6 +237,10 @@ app.UseSwaggerUI();
 // Configure middleware
 app.UseHttpsRedirection();
 app.UseCors();
+
+// Enable static files to serve book covers
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
