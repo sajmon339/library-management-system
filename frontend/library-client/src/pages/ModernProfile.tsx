@@ -150,13 +150,13 @@ const ModernProfile = () => {
   };
   
   return (
-    <div className="bg-neutral-50 min-h-screen pt-24 pb-16">
+    <div className="auto-theme-bg min-h-screen pt-24 pb-16">
       <div className="container-custom">
         <div className="mb-12">
-          <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 mb-2">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 dark:text-burrito-beige mb-2">
             User Profile
           </h1>
-          <p className="text-neutral-600">
+          <p className="auto-theme-text">
             Manage your account information and view your borrowing history
           </p>
         </div>
@@ -170,10 +170,10 @@ const ModernProfile = () => {
                   {user?.userName.charAt(0).toUpperCase()}
                 </div>
                 <div className="ml-5">
-                  <h2 className="text-xl font-semibold text-neutral-900">
+                  <h2 className="text-xl font-semibold auto-theme-text">
                     {user?.userName}
                   </h2>
-                  <p className="text-neutral-600">
+                  <p className="auto-theme-text opacity-80">
                     {user?.role} Account
                   </p>
                 </div>
@@ -219,35 +219,35 @@ const ModernProfile = () => {
             </div>
             
             <div className="card p-6 md:p-8">
-              <h3 className="text-lg font-semibold text-neutral-900 mb-4">Account Statistics</h3>
+              <h3 className="text-lg font-semibold text-neutral-900 dark:text-burrito-beige mb-4">Account Statistics</h3>
               
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-neutral-50 p-4 rounded-lg">
-                  <div className="text-2xl font-bold text-primary-600">
+                <div className="auto-theme-card p-4 rounded-lg">
+                  <div className="text-2xl font-bold text-primary-600 dark:text-primary-500">
                     {checkOuts.length}
                   </div>
-                  <div className="text-sm text-neutral-600">Total Checkouts</div>
+                  <div className="text-sm auto-theme-text">Total Checkouts</div>
                 </div>
                 
-                <div className="bg-neutral-50 p-4 rounded-lg">
-                  <div className="text-2xl font-bold text-primary-600">
+                <div className="auto-theme-card p-4 rounded-lg">
+                  <div className="text-2xl font-bold text-primary-600 dark:text-primary-500">
                     {checkOuts.filter(co => !co.returnDate).length}
                   </div>
-                  <div className="text-sm text-neutral-600">Current Checkouts</div>
+                  <div className="text-sm auto-theme-text">Current Checkouts</div>
                 </div>
                 
-                <div className="bg-neutral-50 p-4 rounded-lg">
-                  <div className="text-2xl font-bold text-primary-600">
+                <div className="auto-theme-card p-4 rounded-lg">
+                  <div className="text-2xl font-bold text-primary-600 dark:text-primary-500">
                     {checkOuts.filter(co => new Date(co.dueDate) < new Date() && !co.returnDate).length}
                   </div>
-                  <div className="text-sm text-neutral-600">Overdue Items</div>
+                  <div className="text-sm auto-theme-text">Overdue Items</div>
                 </div>
                 
-                <div className="bg-neutral-50 p-4 rounded-lg">
-                  <div className="text-2xl font-bold text-primary-600">
+                <div className="auto-theme-card p-4 rounded-lg">
+                  <div className="text-2xl font-bold text-primary-600 dark:text-primary-500">
                     {checkOuts.filter(co => co.returnDate).length}
                   </div>
-                  <div className="text-sm text-neutral-600">Returned Items</div>
+                  <div className="text-sm auto-theme-text">Returned Items</div>
                 </div>
               </div>
             </div>
@@ -256,7 +256,7 @@ const ModernProfile = () => {
           {/* Checkouts section */}
           <div className="lg:col-span-2">
             <div className="card p-6 md:p-8">
-              <h2 className="text-xl font-semibold text-neutral-900 mb-6">
+              <h2 className="text-xl font-semibold auto-theme-text mb-6">
                 My Checked Out Books
               </h2>
               
@@ -272,8 +272,8 @@ const ModernProfile = () => {
                   {error}
                 </div>
               ) : checkOuts.length === 0 ? (
-                <div className="bg-neutral-50 rounded-lg p-8 text-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-12 w-12 text-neutral-400 mx-auto mb-4">
+                <div className="auto-theme-card rounded-lg p-8 text-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-12 w-12 text-neutral-400 dark:text-neutral-500 mx-auto mb-4">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                   </svg>
                   <h3 className="text-lg font-medium text-neutral-800 mb-2">
@@ -290,11 +290,11 @@ const ModernProfile = () => {
                 <div className="space-y-4">
                   {/* Current Checkouts */}
                   <div className="mb-8">
-                    <h3 className="text-lg font-medium text-neutral-900 mb-4">
+                    <h3 className="text-lg font-medium auto-theme-text mb-4">
                       Currently Borrowed
                     </h3>
                     {checkOuts.filter(co => !co.returnDate).length === 0 ? (
-                      <p className="text-neutral-600">No books currently checked out.</p>
+                      <p className="auto-theme-text">No books currently checked out.</p>
                     ) : (
                       <div className="grid grid-cols-1 gap-4">
                         {checkOuts
@@ -368,25 +368,25 @@ const ModernProfile = () => {
                   {/* Borrowing History */}
                   {checkOuts.filter(co => co.returnDate).length > 0 && (
                     <div>
-                      <h3 className="text-lg font-medium text-neutral-900 mb-4">
+                      <h3 className="text-lg font-medium auto-theme-text mb-4">
                         Borrowing History
                       </h3>
-                      <div className="border border-neutral-200 rounded-lg overflow-hidden">
-                        <table className="min-w-full divide-y divide-neutral-200">
-                          <thead className="bg-neutral-50">
+                      <div className="border border-neutral-200 dark:border-burrito-dark-border rounded-lg overflow-hidden">
+                        <table className="min-w-full divide-y divide-neutral-200 dark:divide-burrito-dark-border">
+                          <thead className="bg-neutral-100 dark:bg-burrito-dark-surface">
                             <tr>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                                 Book
                               </th>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                                 Checked Out
                               </th>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                                 Returned
                               </th>
                             </tr>
                           </thead>
-                          <tbody className="bg-white divide-y divide-neutral-200">
+                          <tbody className="bg-white dark:bg-burrito-dark-bg divide-y divide-neutral-200 dark:divide-burrito-dark-border">
                             {checkOuts
                               .filter(co => co.returnDate)
                               .map(checkOut => (

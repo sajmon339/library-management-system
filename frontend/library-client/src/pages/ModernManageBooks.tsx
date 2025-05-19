@@ -647,7 +647,7 @@ const ModernManageBooks = () => {
   };
   
   return (
-    <div className="bg-neutral-50 min-h-screen pt-24 pb-16">
+    <div className="auto-theme-bg min-h-screen pt-24 pb-16">
       <div className="container-custom">
         <div className="mb-8 flex flex-wrap items-center justify-between">
           <div>
@@ -696,27 +696,27 @@ const ModernManageBooks = () => {
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-neutral-200">
-              <thead className="bg-neutral-50">
+              <thead className="bg-neutral-100 dark:bg-burrito-dark-surface">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Cover
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Title
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Author
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Year
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Genre
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Copies
                   </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -739,7 +739,7 @@ const ModernManageBooks = () => {
                   </tr>
                 ) : (
                   books.map((book) => (
-                    <tr key={book.id} className="hover:bg-neutral-50">
+                    <tr key={book.id} className="hover:bg-neutral-50 dark:hover:bg-burrito-dark-surface">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="h-16 w-12 rounded overflow-hidden bg-neutral-100 flex items-center justify-center">
                           <img 

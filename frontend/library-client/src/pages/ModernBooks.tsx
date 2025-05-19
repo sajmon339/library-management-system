@@ -90,26 +90,26 @@ const ModernBooks = () => {
   );
 
   return (
-    <div className="bg-neutral-50 min-h-screen pt-24 pb-16">
+    <div className="auto-theme-bg min-h-screen pt-24 pb-16">
       <div className="container-custom">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 mb-2">
+            <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 dark:text-burrito-beige mb-2">
               Book Catalog
             </h1>
-            <p className="text-neutral-600 max-w-2xl">
+            <p className="auto-theme-text max-w-2xl">
               Browse our collection of books across various genres
             </p>
           </div>
           <div className="mt-4 sm:mt-0">
             <button 
               onClick={() => setShowFilters(!showFilters)}
-              className="btn bg-white text-neutral-700 border border-neutral-200 shadow-sm hover:bg-neutral-50"
+              className="btn auto-theme-card text-neutral-700 dark:text-burrito-dark-text border border-neutral-200 dark:border-burrito-dark-border shadow-sm hover:bg-neutral-50 dark:hover:bg-burrito-burgundy/20"
             >
               <FunnelIcon className="h-5 w-5 mr-2" />
               Filters
               {selectedGenre && (
-                <span className="ml-1 text-xs bg-primary-100 text-primary-700 py-0.5 px-2 rounded-full">
+                <span className="ml-1 text-xs bg-primary-100 dark:bg-burrito-burgundy text-primary-700 dark:text-burrito-beige py-0.5 px-2 rounded-full">
                   1
                 </span>
               )}
@@ -121,26 +121,26 @@ const ModernBooks = () => {
         <div className="mb-8">
           <div className="relative mb-6">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <MagnifyingGlassIcon className="h-5 w-5 text-neutral-400" />
+              <MagnifyingGlassIcon className="h-5 w-5 text-neutral-400 dark:text-burrito-gray" />
             </div>
             <input
               type="text"
               value={searchQuery}
               onChange={handleSearchChange}
               placeholder="Search by title or author..."
-              className="block w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500"
+              className="block w-full pl-10 pr-4 py-3 border border-neutral-200 dark:border-burrito-dark-border rounded-lg shadow-sm focus:ring-primary-500 dark:focus:ring-burrito-cheese focus:border-primary-500 dark:focus:border-burrito-cheese dark:bg-burrito-dark-surface dark:text-burrito-dark-text dark:placeholder-burrito-gray/50"
             />
           </div>
 
           {/* Filters */}
           {showFilters && (
-            <div className="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div className="auto-theme-card rounded-xl shadow-soft p-6 mb-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-medium text-neutral-900">Filters</h3>
+                <h3 className="font-medium text-neutral-900 dark:text-burrito-beige">Filters</h3>
                 {selectedGenre && (
                   <button 
                     onClick={() => handleGenreSelect(null)}
-                    className="text-sm text-primary-600 hover:text-primary-700 flex items-center"
+                    className="text-sm text-primary-600 dark:text-burrito-cheese hover:text-primary-700 dark:hover:text-burrito-beige flex items-center"
                   >
                     Clear filters
                     <XMarkIcon className="h-4 w-4 ml-1" />
@@ -149,7 +149,7 @@ const ModernBooks = () => {
               </div>
               
               <div>
-                <h4 className="text-sm font-medium text-neutral-700 mb-2">Genre</h4>
+                <h4 className="text-sm font-medium auto-theme-text mb-2">Genre</h4>
                 <div className="flex flex-wrap gap-2">
                   {genreList.map((genre) => (
                     <button
@@ -157,8 +157,8 @@ const ModernBooks = () => {
                       onClick={() => handleGenreSelect(genre)}
                       className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
                         selectedGenre === genre
-                          ? 'bg-primary-100 text-primary-700 font-medium'
-                          : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                          ? 'bg-primary-100 dark:bg-burrito-burgundy text-primary-700 dark:text-burrito-beige font-medium'
+                          : 'bg-neutral-100 dark:bg-burrito-dark-surface/70 text-neutral-700 dark:text-burrito-dark-text hover:bg-neutral-200 dark:hover:bg-burrito-burgundy/50'
                       }`}
                     >
                       {genre}
@@ -179,8 +179,8 @@ const ModernBooks = () => {
             </svg>
           </div>
         ) : error ? (
-          <div className="bg-red-50 rounded-lg p-6 text-center">
-            <p className="text-red-700">{error}</p>
+          <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-6 text-center">
+            <p className="text-red-700 dark:text-red-400">{error}</p>
             <button 
               onClick={() => window.location.reload()}
               className="mt-4 btn btn-primary"
@@ -189,9 +189,9 @@ const ModernBooks = () => {
             </button>
           </div>
         ) : filteredBooks.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-soft p-12 text-center">
-            <h3 className="text-xl font-medium text-neutral-800 mb-2">No books found</h3>
-            <p className="text-neutral-600 mb-6">
+          <div className="auto-theme-card rounded-lg shadow-soft p-12 text-center">
+            <h3 className="text-xl font-medium text-neutral-800 dark:text-burrito-beige mb-2">No books found</h3>
+            <p className="auto-theme-text mb-6">
               {searchQuery || selectedGenre 
                 ? "Try adjusting your filters or search terms." 
                 : "Our catalog appears to be empty at the moment."}

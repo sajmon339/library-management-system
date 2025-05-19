@@ -5,19 +5,89 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Light theme variables */
+    --color-bg: theme('colors.burrito.light-bg');
+    --color-surface: theme('colors.burrito.light-surface');
+    --color-border: theme('colors.burrito.light-border');
+    --color-text: theme('colors.burrito.light-text');
+    --color-text-heading: theme('colors.neutral.900');
+    --color-accent: theme('colors.burrito.brown');
+  }
+
+  .dark {
+    /* Dark theme variables */
+    --color-bg: theme('colors.burrito.dark-bg');
+    --color-surface: theme('colors.burrito.dark-surface');
+    --color-border: theme('colors.burrito.dark-border');
+    --color-text: theme('colors.burrito.dark-text');
+    --color-text-heading: theme('colors.burrito.beige');
+    --color-accent: theme('colors.burrito.burgundy');
+    color-scheme: dark;
+  }
+  
   html {
     scroll-behavior: smooth;
   }
   
   body {
-    @apply bg-burrito-beige text-neutral-800 font-sans;
+    @apply bg-burrito-light-bg text-burrito-light-text font-sans dark:bg-burrito-dark-bg dark:text-burrito-dark-text;
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
   }
   
+  main, section, div.bg-white, div.bg-gray-50, div.bg-gray-100 {
+    @apply dark:bg-burrito-dark-bg dark:text-burrito-dark-text;
+  }
+  
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-semibold;
+    @apply font-heading font-semibold text-neutral-900 dark:text-burrito-beige;
+  }
+  
+  /* Force dark mode on specific elements */
+  .dark-forced {
+    background-color: var(--color-bg) !important;
+    color: var(--color-text) !important;
+  }
+  
+  .dark-forced * {
+    color-scheme: dark;
+  }
+
+  /* Direct dark mode classes for problematic elements */
+  .dark-forced-bg {
+    background-color: var(--color-surface) !important;
+    border-color: var(--color-border) !important;
+  }
+  
+  .dark-forced-text {
+    color: var(--color-text) !important;
+  }
+  
+  /* Force all modals and dialogs to adapt to dark mode */
+  .dark [role="dialog"],
+  .dark [role="modal"], 
+  .dark .modal, 
+  .dark .dialog, 
+  .dark .popup {
+    @apply bg-burrito-dark-surface border-burrito-dark-border !important;
+  }
+  
+  /* Force all popups to adapt to dark mode */
+  .dark [data-popper-placement],
+  .dark [role="tooltip"],
+  .dark .tippy-box,
+  .dark .tooltip,
+  .dark .popover {
+    @apply bg-burrito-dark-surface border-burrito-dark-border !important;
+  }
+  
+  /* Additional dark mode fixes */
+  .dark .shadow-lg, 
+  .dark .shadow, 
+  .dark .shadow-md {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
   }
 }
 
@@ -27,22 +97,70 @@
   }
   
   .btn-primary {
-    @apply bg-burrito-brown text-white hover:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-burrito-brown;
+    @apply bg-burrito-brown text-white hover:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-burrito-brown dark:bg-burrito-burgundy dark:text-burrito-beige dark:hover:bg-burrito-brown dark:focus:ring-burrito-cheese;
   }
   
   .btn-secondary {
-    @apply bg-burrito-beige text-burrito-brown border-burrito-burgundy hover:bg-burrito-gray focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-burrito-brown;
+    @apply bg-burrito-beige text-burrito-brown border-burrito-burgundy hover:bg-burrito-gray focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-burrito-brown dark:bg-burrito-burgundy dark:text-burrito-beige dark:border-burrito-brown dark:hover:bg-burrito-brown dark:focus:ring-burrito-beige;
   }
   
   .btn-accent {
-    @apply bg-burrito-tomato text-white hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-burrito-tomato;
+    @apply bg-burrito-tomato text-white hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-burrito-tomato dark:bg-burrito-tomato dark:text-white dark:hover:bg-accent-800 dark:focus:ring-burrito-cheese;
   }
   
   .card {
-    @apply bg-white rounded-xl border border-burrito-gray shadow-soft overflow-hidden transition-all duration-200;
+    @apply bg-white rounded-xl border border-burrito-gray shadow-soft overflow-hidden transition-all duration-200 dark:bg-burrito-dark-surface dark:border-burrito-dark-border dark:text-burrito-dark-text;
   }
   
   .container-custom {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Form elements */
+  input, textarea, select {
+    @apply dark:bg-burrito-dark-surface dark:border-burrito-dark-border dark:text-burrito-dark-text dark:placeholder-burrito-gray/50;
+  }
+  
+  input:focus, textarea:focus, select:focus {
+    @apply dark:border-burrito-cheese dark:ring-burrito-cheese/30;
+  }
+  
+  /* Links */
+  a:not(.btn) {
+    @apply dark:text-burrito-cheese dark:hover:text-burrito-beige;
+  }
+  
+  /* Table */
+  table {
+    @apply dark:border-burrito-dark-border;
+  }
+  
+  th {
+    @apply dark:bg-burrito-burgundy dark:text-burrito-beige;
+  }
+  
+  td {
+    @apply dark:border-burrito-dark-border;
+  }
+  
+  tr:nth-child(even) {
+    @apply dark:bg-burrito-dark-bg/50;
+  }
+  
+  /* Auto theme utility classes */
+  .auto-theme-bg {
+    @apply bg-burrito-light-bg dark:bg-burrito-dark-bg;
+  }
+  
+  .auto-theme-text {
+    @apply text-burrito-light-text dark:text-burrito-dark-text;
+  }
+  
+  .auto-theme-card {
+    @apply bg-burrito-light-surface border-burrito-light-border dark:bg-burrito-dark-surface dark:border-burrito-dark-border rounded-lg;
+  }
+  
+  .auto-theme-section {
+    @apply bg-burrito-light-bg dark:bg-burrito-dark-bg;
   }
 }

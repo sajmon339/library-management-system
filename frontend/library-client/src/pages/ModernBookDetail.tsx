@@ -176,7 +176,7 @@ const ModernBookDetail = () => {
   }
   
   return (
-    <div className="min-h-screen bg-neutral-50 pt-24 pb-16">
+    <div className="min-h-screen auto-theme-bg pt-24 pb-16">
       <div className="container-custom">
         <div className="mb-6">
           <button 

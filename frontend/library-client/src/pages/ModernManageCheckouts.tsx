@@ -183,7 +183,7 @@ const ModernManageCheckouts = () => {
   };
   
   return (
-    <div className="bg-neutral-50 min-h-screen pt-24 pb-16">
+    <div className="auto-theme-bg min-h-screen pt-24 pb-16">
       <div className="container-custom">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 mb-2">
@@ -260,24 +260,24 @@ const ModernManageCheckouts = () => {
           </div>
         )}
         
-        <div className="bg-neutral-50 shadow-md rounded-lg overflow-hidden">
+        <div className="auto-theme-card shadow-md rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-neutral-200">
-              <thead className="bg-neutral-50">
+            <table className="min-w-full divide-y divide-neutral-200 dark:divide-burrito-dark-border">
+              <thead className="bg-neutral-100 dark:bg-burrito-dark-surface">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Book
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     User
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Checkout Date
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Due Date
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Status
                   </th>
                   <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">
@@ -285,7 +285,7 @@ const ModernManageCheckouts = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-neutral-50 divide-y divide-neutral-200">
+              <tbody className="auto-theme-bg divide-y divide-neutral-200 dark:divide-burrito-dark-border">
                 {loading ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-12 text-center">
@@ -316,7 +316,7 @@ const ModernManageCheckouts = () => {
                     return (
                       <tr 
                         key={checkout.id} 
-                        className={`relative group bg-neutral-50 ${!isReturned ? 'cursor-pointer hover:bg-primary-50 hover:shadow-md transition-all duration-150 active:bg-primary-100' : 'hover:bg-neutral-100'}`}
+                        className={`relative group auto-theme-bg ${!isReturned ? 'cursor-pointer hover:bg-primary-50 dark:hover:bg-burrito-dark-surface hover:shadow-md transition-all duration-150 active:bg-primary-100 dark:active:bg-burrito-burgundy/50' : 'hover:bg-neutral-100 dark:hover:bg-burrito-dark-bg/70'}`}
                         onClick={() => !isReturned && handleCheckOutAction(checkout)}
                         style={!isReturned ? { position: 'relative', zIndex: 10 } : {}}
                       >
@@ -325,31 +325,31 @@ const ModernManageCheckouts = () => {
                             <div className="h-full w-2 bg-primary-500 group-hover:bg-primary-600 transition-colors duration-150"></div>
                           </td>
                         )}
-                        <td className="px-6 py-4 bg-neutral-50">
-                          <div className="text-sm font-medium text-neutral-900">{checkout.bookTitle}</div>
-                          <div className="text-sm text-neutral-500">{checkout.catalogNumber}</div>
+                        <td className="px-6 py-4 auto-theme-bg">
+                          <div className="text-sm font-medium auto-theme-text">{checkout.bookTitle}</div>
+                          <div className="text-sm text-neutral-500 dark:text-burrito-gray">{checkout.catalogNumber}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap bg-neutral-50">
-                          <div className="text-sm text-neutral-800">{checkout.userName}</div>
+                        <td className="px-6 py-4 whitespace-nowrap auto-theme-bg">
+                          <div className="text-sm auto-theme-text">{checkout.userName}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap bg-neutral-50">
-                          <div className="text-sm text-neutral-800">
+                        <td className="px-6 py-4 whitespace-nowrap auto-theme-bg">
+                          <div className="text-sm auto-theme-text">
                             {formatDate(checkout.checkOutDate)}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap bg-neutral-50">
-                          <div className="text-sm text-neutral-800">
+                        <td className="px-6 py-4 whitespace-nowrap auto-theme-bg">
+                          <div className="text-sm auto-theme-text">
                             {formatDate(checkout.dueDate)}
                           </div>
                           {!isReturned && (
-                            <div className={`text-xs ${isOverdue ? 'text-red-600 font-semibold' : 'text-neutral-500'}`}>
+                            <div className={`text-xs ${isOverdue ? 'text-red-600 font-semibold dark:text-red-400' : 'text-neutral-500 dark:text-burrito-gray'}`}>
                               {isOverdue
                                 ? `${Math.abs(daysLeft)} days overdue`
                                 : `${daysLeft} days left`}
                             </div>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap bg-neutral-50">
+                        <td className="px-6 py-4 whitespace-nowrap auto-theme-bg">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             getStatusClass(checkout.status, checkout.dueDate)
                           }`}>
@@ -360,12 +360,12 @@ const ModernManageCheckouts = () => {
                               : 'Active'}
                           </span>
                           {isReturned && (
-                            <div className="text-xs text-neutral-500 mt-1">
+                            <div className="text-xs text-neutral-500 dark:text-burrito-gray mt-1">
                               {formatDate(checkout.returnDate!)}
                             </div>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right bg-neutral-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-right auto-theme-bg">
                           {!isReturned && (
                             <div className="flex justify-end space-x-2">
                               <button

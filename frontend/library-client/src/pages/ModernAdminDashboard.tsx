@@ -76,13 +76,13 @@ const ModernAdminDashboard = () => {
   ];
   
   return (
-    <div className="bg-neutral-50 min-h-screen pt-24 pb-16">
+    <div className="auto-theme-bg min-h-screen pt-24 pb-16">
       <div className="container-custom">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 mb-2">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 dark:text-burrito-beige mb-2">
             Admin Dashboard
           </h1>
-          <p className="text-neutral-600">
+          <p className="auto-theme-text">
             Manage your library system and monitor key metrics
           </p>
         </div>

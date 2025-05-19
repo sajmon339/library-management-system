@@ -2,10 +2,19 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+## Theme System
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The app uses a centralized theming system with CSS variables and Tailwind. See [THEMING.md](./THEMING.md) for details.
+
+To migrate existing components to the new theme system:
+
+```bash
+# Install dependencies first
+npm install
+
+# Run the migration script
+npm run migrate-theme
+```
 
 ## Expanding the ESLint configuration
 

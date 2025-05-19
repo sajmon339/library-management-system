@@ -111,7 +111,7 @@ const ModernMyBooks = () => {
   };
   
   return (
-    <div className="bg-neutral-50 min-h-screen pt-24 pb-16">
+    <div className="auto-theme-bg min-h-screen pt-24 pb-16">
       <div className="container-custom">
         <div className="mb-12">
           <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 mb-2">
@@ -314,23 +314,23 @@ const ModernMyBooks = () => {
                 <div className="bg-white shadow-soft rounded-xl overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-neutral-200">
-                      <thead className="bg-neutral-50">
+                      <thead className="bg-neutral-100 dark:bg-burrito-dark-surface">
                         <tr>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                             Book
                           </th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                             Checked Out
                           </th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                             Returned
                           </th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                             Status
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-neutral-200">
+                      <tbody className="bg-white dark:bg-burrito-dark-bg divide-y divide-neutral-200 dark:divide-burrito-dark-border">
                         {getReturnedBooks().map((checkOut) => {
                           const dueDate = new Date(checkOut.dueDate);
                           const returnDate = new Date(checkOut.returnDate!);

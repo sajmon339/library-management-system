@@ -1,8 +1,9 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon, UserIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon, UserIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext.js';
+import { useTheme } from '../context/ThemeContext.js';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -10,10 +11,13 @@ function classNames(...classes: string[]) {
 
 const ModernNavbar = () => {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [hasDarkBackground, setHasDarkBackground] = useState(false);
+  
+  const isDarkMode = theme === 'dark';
 
   // Detect if the page has a dark background or hero image
   useEffect(() => {
@@ -98,10 +102,14 @@ const ModernNavbar = () => {
 
   return (      <Disclosure as="nav" className={`fixed w-full z-50 transition-all duration-300 ${
     scrolled 
-      ? 'bg-white shadow-md py-1' 
+      ? isDarkMode 
+        ? 'bg-burrito-dark-surface text-burrito-dark-text shadow-md py-1' 
+        : 'bg-burrito-light-surface shadow-md py-1'
       : hasDarkBackground 
         ? 'bg-transparent pt-3' 
-        : 'bg-burrito-brown pt-3'
+        : isDarkMode 
+          ? 'bg-burrito-dark-bg text-burrito-dark-text pt-3' 
+          : 'bg-burrito-brown pt-3'
   }`}>
       {({ open }) => (
         <>
@@ -111,7 +119,9 @@ const ModernNavbar = () => {
                 {/* Mobile menu button*/}
                 <Disclosure.Button className={`relative inline-flex items-center justify-center rounded-md p-2 ${
                   scrolled 
-                    ? 'text-burrito-brown hover:bg-burrito-beige' 
+                    ? isDarkMode
+                      ? 'text-burrito-gray hover:bg-burrito-charcoal'
+                      : 'text-burrito-brown hover:bg-burrito-beige' 
                     : 'text-white hover:bg-white/10'
                 } focus:outline-none focus:ring-2 focus:ring-inset focus:ring-burrito-brown`}>
                   <span className="sr-only">Open main menu</span>
@@ -130,7 +140,11 @@ const ModernNavbar = () => {
                       ? 'text-burrito-brown' 
                       : 'text-white'
                   }`}>
-                    <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="h-10 w-10 mr-2 rounded-full object-cover" />
+                    <img 
+                      src={isDarkMode ? "/themes/dark/burrito_full_dark.png" : "/burrito_icon_plain.png"} 
+                      alt="Universidad de WSBurrito Logo" 
+                      className="h-10 w-10 mr-2 rounded-full object-cover" 
+                    />
                     <span className="text-xl md:text-2xl whitespace-nowrap">Universidad de WSBurrito</span>
                   </Link>
                 </div>
@@ -143,10 +157,14 @@ const ModernNavbar = () => {
                       className={classNames(
                         item.current 
                           ? (scrolled 
-                              ? 'text-burrito-brown border-b-2 border-burrito-brown' 
+                              ? isDarkMode
+                                ? 'text-burrito-cheese border-b-2 border-burrito-cheese'
+                                : 'text-burrito-brown border-b-2 border-burrito-brown' 
                               : 'text-white border-b-2 border-white')
                           : (scrolled 
-                              ? 'text-neutral-600 hover:text-burrito-brown' 
+                              ? isDarkMode
+                                ? 'text-burrito-gray hover:text-burrito-cheese'
+                                : 'text-neutral-600 hover:text-burrito-brown' 
                               : 'text-white/80 hover:text-white'),
                         'px-3 py-2 text-sm font-medium transition-colors duration-200'
                       )}
@@ -159,16 +177,45 @@ const ModernNavbar = () => {
               </div>
               
               <div className="flex items-center gap-4">
-                <button className={`hidden sm:flex items-center justify-center p-2 rounded-full ${scrolled ? 'text-burrito-brown hover:bg-burrito-beige' : 'text-white hover:bg-white/10'}`}>
+                <button 
+                  className={`hidden sm:flex items-center justify-center p-2 rounded-full ${scrolled ? 'text-burrito-brown hover:bg-burrito-beige' : 'text-white hover:bg-white/10'}`}
+                  aria-label="Search"
+                >
                   <MagnifyingGlassIcon className="h-5 w-5" />
+                </button>
+                
+                <button 
+                  onClick={toggleTheme} 
+                  className={`flex items-center justify-center p-2 rounded-full transition-colors ${
+                    scrolled 
+                      ? isDarkMode
+                        ? 'text-burrito-cheese hover:bg-burrito-burgundy/20'
+                        : 'text-burrito-brown hover:bg-burrito-beige' 
+                      : 'text-white hover:bg-white/10'
+                  }`}
+                  aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                >
+                  {isDarkMode ? (
+                    <SunIcon className="h-5 w-5" />
+                  ) : (
+                    <MoonIcon className="h-5 w-5" />
+                  )}
                 </button>
                 
                 {isAuthenticated ? (
                   <Menu as="div" className="relative">
                     <div>
-                      <Menu.Button className={`flex rounded-full focus:outline-none focus:ring-2 focus:ring-burrito-brown focus:ring-offset-2`}>
+                      <Menu.Button className={`flex rounded-full focus:outline-none focus:ring-2 ${
+                        isDarkMode 
+                          ? 'focus:ring-burrito-cheese focus:ring-offset-2 focus:ring-offset-burrito-charcoal' 
+                          : 'focus:ring-burrito-brown focus:ring-offset-2'
+                      }`}>
                         <span className="sr-only">Open user menu</span>
-                        <div className="h-9 w-9 rounded-full bg-burrito-brown flex items-center justify-center text-white font-medium text-sm shadow-sm">
+                        <div className={`h-9 w-9 rounded-full ${
+                          isDarkMode 
+                            ? 'bg-burrito-burgundy' 
+                            : 'bg-burrito-brown'
+                        } flex items-center justify-center text-white font-medium text-sm shadow-sm`}>
                           {user?.userName.charAt(0).toUpperCase()}
                         </div>
                       </Menu.Button>
@@ -182,10 +229,14 @@ const ModernNavbar = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <div className="px-4 py-3 border-b border-neutral-100">
-                          <p className="text-sm text-neutral-500">Signed in as</p>
-                          <p className="text-sm font-medium text-neutral-900 truncate">{user?.userName}</p>
+                      <Menu.Items className={`absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl ${
+                        isDarkMode 
+                          ? 'bg-burrito-charcoal py-1 shadow-lg ring-1 ring-burrito-burgundy ring-opacity-30 focus:outline-none' 
+                          : 'bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'
+                      }`}>
+                        <div className={`px-4 py-3 ${isDarkMode ? 'border-b border-burrito-burgundy' : 'border-b border-neutral-100'}`}>
+                          <p className={`text-sm ${isDarkMode ? 'text-burrito-gray' : 'text-neutral-500'}`}>Signed in as</p>
+                          <p className={`text-sm font-medium ${isDarkMode ? 'text-burrito-beige' : 'text-neutral-900'} truncate`}>{user?.userName}</p>
                         </div>
                         
                         {userMenuItems.map((item) => (
@@ -194,8 +245,13 @@ const ModernNavbar = () => {
                               <Link
                                 to={item.href}
                                 className={classNames(
-                                  active ? 'bg-neutral-50' : '',
-                                  'flex items-center px-4 py-2 text-sm text-neutral-700'
+                                  active 
+                                    ? isDarkMode 
+                                      ? 'bg-burrito-burgundy/20' 
+                                      : 'bg-neutral-50' 
+                                    : '',
+                                  'flex items-center px-4 py-2 text-sm',
+                                  isDarkMode ? 'text-burrito-gray' : 'text-neutral-700'
                                 )}
                               >
                                 {item.icon}
@@ -210,8 +266,13 @@ const ModernNavbar = () => {
                             <button
                               onClick={handleLogout}
                               className={classNames(
-                                active ? 'bg-neutral-50' : '',
-                                'flex items-center w-full text-left px-4 py-2 text-sm text-neutral-700'
+                                active 
+                                  ? isDarkMode 
+                                    ? 'bg-burrito-burgundy/20' 
+                                    : 'bg-neutral-50' 
+                                  : '',
+                                'flex items-center w-full text-left px-4 py-2 text-sm',
+                                isDarkMode ? 'text-burrito-gray' : 'text-neutral-700'
                               )}
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-2">
@@ -230,7 +291,9 @@ const ModernNavbar = () => {
                       to="/login"
                       className={`text-sm font-medium ${
                         scrolled 
-                          ? 'text-burrito-brown hover:text-burrito-burgundy' 
+                          ? isDarkMode
+                            ? 'text-burrito-cheese hover:text-burrito-beige'
+                            : 'text-burrito-brown hover:text-burrito-burgundy' 
                           : 'text-white hover:text-white/80'
                       }`}
                     >
@@ -248,7 +311,7 @@ const ModernNavbar = () => {
             </div>
           </div>
 
-          <Disclosure.Panel className="sm:hidden bg-white shadow-lg">
+          <Disclosure.Panel className={`sm:hidden ${isDarkMode ? 'bg-burrito-charcoal shadow-lg' : 'bg-white shadow-lg'}`}>
             <div className="space-y-1 px-2 pb-3 pt-2">
               {navigation.map((item) => (
                 <Disclosure.Button
@@ -257,8 +320,12 @@ const ModernNavbar = () => {
                   to={item.href}
                   className={classNames(
                     item.current
-                      ? 'bg-burrito-beige text-burrito-brown'
-                      : 'text-neutral-600 hover:bg-burrito-beige hover:text-burrito-brown',
+                      ? isDarkMode
+                        ? 'bg-burrito-burgundy text-burrito-beige'
+                        : 'bg-burrito-beige text-burrito-brown'
+                      : isDarkMode
+                        ? 'text-burrito-gray hover:bg-burrito-burgundy hover:text-burrito-beige'
+                        : 'text-neutral-600 hover:bg-burrito-beige hover:text-burrito-brown',
                     'block rounded-md px-3 py-2 text-base font-medium'
                   )}
                   aria-current={item.current ? 'page' : undefined}

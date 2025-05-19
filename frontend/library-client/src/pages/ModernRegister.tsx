@@ -41,17 +41,17 @@ const ModernRegister = () => {
   };
   
   return (
-    <div className="min-h-screen bg-neutral-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen auto-theme-bg flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
           <Link to="/" className="inline-flex items-center text-3xl font-heading font-bold text-primary-700 mb-8">
             <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="h-10 w-10 mr-2 rounded-full object-cover" />
             <span>Universidad de WSBurrito</span>
           </Link>
-          <h2 className="text-3xl font-heading font-bold text-neutral-900">
+          <h2 className="text-3xl font-heading font-bold text-neutral-900 dark:text-burrito-beige">
             Create your account
           </h2>
-          <p className="mt-2 text-neutral-600">
+          <p className="mt-2 auto-theme-text">
             Join our library community today
           </p>
         </div>

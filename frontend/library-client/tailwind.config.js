@@ -4,6 +4,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class', // Enable class-based dark mode
   theme: {
     extend: {
       screens: {
@@ -18,6 +19,17 @@ export default {
           cheese: "#FFC93C",
           gray: "#E5DED6",
           burgundy: "#802418",
+          black: "#181818", // Old dark mode background (kept for backward compatibility)
+          charcoal: "#242424", // Primary dark mode background
+          // Theme colors - semantic naming for better maintainability
+          'dark-bg': "#242424", // Primary dark mode background
+          'dark-surface': "#2C2C2C", // Dark mode surface/card background
+          'dark-border': "#802418", // Dark mode borders
+          'dark-text': "#E5DED6", // Dark mode text
+          'light-bg': "#FFE4B2", // Light mode background
+          'light-surface': "#FFFFFF", // Light mode surface/card background
+          'light-border': "#E5DED6", // Light mode borders
+          'light-text': "#50443A", // Light mode text
         },
         primary: {
           50: '#FFF9EF',

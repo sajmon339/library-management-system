@@ -149,14 +149,14 @@ const ModernManageUsers = () => {
   };
   
   return (
-    <div className="bg-neutral-50 min-h-screen pt-24 pb-16">
+    <div className="auto-theme-bg min-h-screen pt-24 pb-16">
       <div className="container-custom">
         <div className="mb-8 flex flex-wrap items-center justify-between">
           <div>
-            <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 mb-2">
+            <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 dark:text-burrito-beige mb-2">
               Manage Users
             </h1>
-            <p className="text-neutral-600">
+            <p className="auto-theme-text">
               View, edit roles, and manage library users
             </p>
           </div>
@@ -291,29 +291,29 @@ const ModernManageUsers = () => {
           </Dialog>
         </Transition>
         
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="auto-theme-card shadow-md rounded-lg overflow-hidden border border-neutral-200 dark:border-burrito-dark-border">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-neutral-200">
-              <thead className="bg-neutral-50">
+            <table className="min-w-full divide-y divide-neutral-200 dark:divide-burrito-dark-border">
+              <thead className="bg-neutral-100 dark:bg-burrito-dark-surface">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     User
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Email
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Role
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Member Since
                   </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-neutral-200">
+              <tbody className="bg-white dark:bg-burrito-dark-bg divide-y divide-neutral-200 dark:divide-burrito-dark-border">
                 {loading ? (
                   <tr>
                     <td colSpan={5} className="px-6 py-12 text-center">
@@ -331,20 +331,20 @@ const ModernManageUsers = () => {
                   </tr>
                 ) : (
                   users.map((user) => (
-                    <tr key={user.id} className="hover:bg-neutral-50">
+                    <tr key={user.id} className="hover:bg-neutral-100 dark:hover:bg-burrito-dark-surface">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700">
                             {user.userName.charAt(0).toUpperCase()}
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-neutral-900">{user.userName}</div>
-                            <div className="text-sm text-neutral-500">ID: {user.id}</div>
+                            <div className="text-sm font-medium auto-theme-text">{user.userName}</div>
+                            <div className="text-sm text-neutral-500 dark:text-burrito-gray">ID: {user.id}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-neutral-800">{user.email}</div>
+                        <div className="text-sm auto-theme-text">{user.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {selectedUserId === user.id ? (
@@ -384,7 +384,7 @@ const ModernManageUsers = () => {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-neutral-800">
+                        <div className="text-sm auto-theme-text">
                           {user.createdAt ? formatDate(user.createdAt) : 'N/A'}
                         </div>
                       </td>

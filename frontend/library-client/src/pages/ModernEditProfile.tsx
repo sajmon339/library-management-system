@@ -81,13 +81,13 @@ const ModernEditProfile = () => {
   }
   
   return (
-    <div className="bg-neutral-50 min-h-screen pt-24 pb-16">
+    <div className="auto-theme-bg min-h-screen pt-24 pb-16">
       <div className="container-custom max-w-md mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-heading font-bold text-neutral-900 mb-2">
+          <h1 className="text-3xl font-heading font-bold text-neutral-900 dark:text-burrito-beige mb-2">
             Edit Profile
           </h1>
-          <p className="text-neutral-600">
+          <p className="auto-theme-text">
             Update your account information
           </p>
         </div>
@@ -98,7 +98,7 @@ const ModernEditProfile = () => {
               {user.userName.charAt(0).toUpperCase()}
             </div>
             <div className="ml-5">
-              <h2 className="text-xl font-semibold text-neutral-900">
+              <h2 className="text-xl font-semibold auto-theme-text">
                 {user.userName}
               </h2>
               <p className="text-neutral-600">
