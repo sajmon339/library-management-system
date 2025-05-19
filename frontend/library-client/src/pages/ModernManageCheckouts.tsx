@@ -2,20 +2,46 @@ import { useState, useEffect } from 'react';
 import { checkOutService } from '../api/checkOutService';
 import { CheckOutStatus } from '../types/checkOut';
 import type { CheckOut } from '../types/checkOut';
-import CheckOutActionModal from '../components/CheckOutActionModal.js';
+import CheckOutActionModal from '../components/CheckOutActionModal';
 import { ArrowPathIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const ModernManageCheckouts = () => {
   const [checkouts, setCheckouts] = useState<CheckOut[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'all' | 'active' | 'overdue'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'active' | 'overdue'>('active');
   const [selectedCheckOut, setSelectedCheckOut] = useState<CheckOut | null>(null);
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const { isAuthenticated, isAdmin } = useAuth();
+  const navigate = useNavigate();
+  
+  // State to control instruction visibility
+  const [showInstructions, setShowInstructions] = useState(true);
   
   useEffect(() => {
-    fetchCheckouts();
-  }, [activeTab]);
+    // Set a timer to automatically dismiss the instructions after 8 seconds
+    if (showInstructions) {
+      const timer = setTimeout(() => {
+        setShowInstructions(false);
+      }, 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [showInstructions]);
+  
+  useEffect(() => {          // Verify auth status before fetching data
+          if (!isAuthenticated || !isAdmin) {
+            navigate('/login');
+            return;
+          }
+          
+          fetchCheckouts();
+          // Force repaint for any UI rendering issues
+          setTimeout(() => {
+            setLoading(false);
+          }, 500);
+  }, [activeTab, isAuthenticated, isAdmin, navigate]);
   
   const fetchCheckouts = async () => {
     try {
@@ -24,13 +50,27 @@ const ModernManageCheckouts = () => {
       
       switch (activeTab) {
         case 'active':
+          console.log('Fetching active checkouts');
           data = await checkOutService.getActiveCheckOuts();
+          console.log('Active checkouts data:', data);
+          // Filter out any returned books that might have come back from the API
+          // Modified: Only filter by status to ensure we show all Active books
+          data = data.filter(checkout => checkout.status !== CheckOutStatus.Returned);
+          console.log('Filtered active checkouts:', data);
           break;
         case 'overdue':
+          console.log('Fetching overdue checkouts');
           data = await checkOutService.getOverdueCheckOuts();
+          console.log('Overdue checkouts data:', data);
+          // Filter out any returned books that might have come back from the API
+          // Modified: Only filter by status to ensure we show all Overdue books
+          data = data.filter(checkout => checkout.status !== CheckOutStatus.Returned);
+          console.log('Filtered overdue checkouts:', data);
           break;
         default:
+          console.log('Fetching all checkouts');
           data = await checkOutService.getAllCheckOuts();
+          console.log('All checkouts data:', data);
       }
       
       setCheckouts(data);
@@ -45,18 +85,21 @@ const ModernManageCheckouts = () => {
   
   const handleReturnBook = async (id: number) => {
     try {
-      await checkOutService.returnBook(id);
+      // Call the API to return the book
+      const updatedCheckout = await checkOutService.returnBook(id);
+      console.log('Book return response:', updatedCheckout);
       
-      // Update local state
+      // Update all checkouts to reflect the change
       setCheckouts(checkouts.map(checkout => 
         checkout.id === id
-          ? { 
-              ...checkout, 
-              status: CheckOutStatus.Returned,
-              returnDate: new Date().toISOString()
-            }
+          ? { ...checkout, status: CheckOutStatus.Returned } // Force the status to Returned
           : checkout
       ));
+      
+      // If we're in active or overdue tab, this book should no longer be visible
+      if (activeTab === 'active' || activeTab === 'overdue') {
+        setCheckouts(prev => prev.filter(checkout => checkout.id !== id));
+      }
       
       setError(null);
     } catch (err) {
@@ -85,9 +128,27 @@ const ModernManageCheckouts = () => {
     setSelectedCheckOut(checkOut);
     setIsActionModalOpen(true);
   };
+
+  // Helper function to determine if a checkout has been properly returned
+  const isBookReturned = (checkout: CheckOut): boolean => {
+    // Check for epoch date (01/01/1970) which indicates a database default rather than an actual return
+    const isEpochDate = checkout.returnDate ? new Date(checkout.returnDate).getTime() < 86400000 : false;
+    
+    // Special debugging
+    console.log(`Checkout ${checkout.id} status: ${checkout.status}, returnDate: ${checkout.returnDate}, isEpochDate: ${isEpochDate}`);
+    
+    // Book is considered returned if it has Returned status OR a valid return date (not epoch)
+    // Note the reversed logic - first check status, then check date
+    return checkout.status === CheckOutStatus.Returned || 
+           (checkout.returnDate !== undefined && !isEpochDate);
+  };
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
+    // Handle epoch date (01/01/1970)
+    if (date.getTime() < 86400000) {
+      return 'N/A';
+    }
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'short',
@@ -134,6 +195,29 @@ const ModernManageCheckouts = () => {
         </div>
         
         <div className="mb-6">
+          {/* Information message about clicking on rows - shows for active or overdue tabs */}
+          {!loading && showInstructions && (activeTab === 'active' || activeTab === 'overdue') && (
+            <div className="mb-4 p-4 bg-primary-50 border-l-4 border-primary-500 rounded-md text-primary-700 animate-pulse">
+              <div className="flex justify-between items-center">
+                <p className="flex items-center text-sm font-medium">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                  </svg>
+                  <span>
+                    <strong>TIP:</strong> Click on any non-returned checkout row or the "MANAGE BOOK" button to return or renew a book.
+                  </span>
+                </p>
+                <button 
+                  onClick={() => setShowInstructions(false)} 
+                  className="text-primary-500 hover:text-primary-700"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
           <div className="border-b border-neutral-200">
             <nav className="-mb-px flex space-x-8">
               <button
@@ -176,7 +260,7 @@ const ModernManageCheckouts = () => {
           </div>
         )}
         
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="bg-neutral-50 shadow-md rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-neutral-200">
               <thead className="bg-neutral-50">
@@ -201,43 +285,59 @@ const ModernManageCheckouts = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-neutral-200">
+              <tbody className="bg-neutral-50 divide-y divide-neutral-200">
                 {loading ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-12 text-center">
-                      <svg className="animate-spin h-8 w-8 text-primary-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin h-8 w-8 text-primary-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
+                      <p className="text-primary-600 font-medium">Loading {activeTab === 'all' ? 'all' : activeTab} checkouts...</p>
                     </td>
                   </tr>
                 ) : checkouts.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-12 text-center text-neutral-500">
-                      No checkouts found.
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mx-auto mb-4 text-neutral-300">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 0 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 1 18 18a8.967 8.967 0 0 1-6 2.292m0-14.25v14.25" />
+                      </svg>
+                      <p className="text-lg font-medium mb-1">No {activeTab === 'all' ? '' : activeTab} checkouts found</p>
+                      <p>There are currently no {activeTab === 'all' ? '' : activeTab} checkouts in the system.</p>
                     </td>
                   </tr>
                 ) : (
                   checkouts.map((checkout) => {
                     const daysLeft = getDaysLeft(checkout.dueDate);
                     const isOverdue = daysLeft < 0;
-                    const isReturned = checkout.returnDate !== undefined;
+                    // Simplified check - only consider a book returned if its status is Returned
+                    const isReturned = checkout.status === CheckOutStatus.Returned;
                     
                     return (
-                      <tr key={checkout.id} className="hover:bg-neutral-50">
-                        <td className="px-6 py-4">
+                      <tr 
+                        key={checkout.id} 
+                        className={`relative group bg-neutral-50 ${!isReturned ? 'cursor-pointer hover:bg-primary-50 hover:shadow-md transition-all duration-150 active:bg-primary-100' : 'hover:bg-neutral-100'}`}
+                        onClick={() => !isReturned && handleCheckOutAction(checkout)}
+                        style={!isReturned ? { position: 'relative', zIndex: 10 } : {}}
+                      >
+                        {!isReturned && (
+                          <td className="absolute left-0 top-0 h-full w-2 px-0 py-0">
+                            <div className="h-full w-2 bg-primary-500 group-hover:bg-primary-600 transition-colors duration-150"></div>
+                          </td>
+                        )}
+                        <td className="px-6 py-4 bg-neutral-50">
                           <div className="text-sm font-medium text-neutral-900">{checkout.bookTitle}</div>
                           <div className="text-sm text-neutral-500">{checkout.catalogNumber}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap bg-neutral-50">
                           <div className="text-sm text-neutral-800">{checkout.userName}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap bg-neutral-50">
                           <div className="text-sm text-neutral-800">
                             {formatDate(checkout.checkOutDate)}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap bg-neutral-50">
                           <div className="text-sm text-neutral-800">
                             {formatDate(checkout.dueDate)}
                           </div>
@@ -249,7 +349,7 @@ const ModernManageCheckouts = () => {
                             </div>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap bg-neutral-50">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             getStatusClass(checkout.status, checkout.dueDate)
                           }`}>
@@ -265,17 +365,21 @@ const ModernManageCheckouts = () => {
                             </div>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <td className="px-6 py-4 whitespace-nowrap text-right bg-neutral-50">
                           {!isReturned && (
                             <div className="flex justify-end space-x-2">
                               <button
-                                onClick={() => handleCheckOutAction(checkout)}
-                                className="inline-flex items-center p-1.5 border border-transparent rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevent row click
+                                  handleCheckOutAction(checkout);
+                                }}
+                                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-medium transition-colors duration-150 transform hover:scale-105"
                                 title="Manage checkout"
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-1.5">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                                 </svg>
+                                <span className="font-bold">MANAGE BOOK</span>
                               </button>
                             </div>
                           )}

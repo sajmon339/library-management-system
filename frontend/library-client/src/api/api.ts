@@ -62,11 +62,29 @@ api.interceptors.response.use(
     
     // Handle 401 errors (unauthorized)
     if (error.response?.status === 401 && !originalRequest._retry) {
-      console.log('API: Authentication error, clearing token');
-      // Clear token and redirect to login
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      console.log('API: Authentication error encountered');
+      originalRequest._retry = true;
+      
+      // Attempt to get a fresh token from localStorage
+      // This can help if the token was updated in another tab
+      const freshToken = localStorage.getItem('token');
+      if (freshToken && freshToken !== originalRequest.headers?.Authorization?.replace('Bearer ', '')) {
+        console.log('API: Found a different token in localStorage, retrying with new token');
+        originalRequest.headers.Authorization = `Bearer ${freshToken}`;
+        return axios(originalRequest);
+      }
+      
+      // If the user is on an admin page, don't automatically redirect to login
+      // This allows the admin route component to handle the redirection more gracefully
+      const currentPath = window.location.pathname;
+      if (!currentPath.startsWith('/admin')) {
+        console.log('API: Not on admin route, clearing token and redirecting to login');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      } else {
+        console.log('API: On admin route, not redirecting automatically');
+      }
     }
     
     return Promise.reject(error);
