@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Nunito+Sans:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -10,7 +10,7 @@
   }
   
   body {
-    @apply bg-neutral-50 text-neutral-800 font-sans;
+    @apply bg-burrito-beige text-neutral-800 font-sans;
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
@@ -27,19 +27,19 @@
   }
   
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+    @apply bg-burrito-brown text-white hover:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-burrito-brown;
   }
   
   .btn-secondary {
-    @apply bg-white text-primary-700 border-primary-200 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+    @apply bg-burrito-beige text-burrito-brown border-burrito-burgundy hover:bg-burrito-gray focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-burrito-brown;
   }
   
   .btn-accent {
-    @apply bg-accent-600 text-white hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500;
+    @apply bg-burrito-tomato text-white hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-burrito-tomato;
   }
   
   .card {
-    @apply bg-white rounded-xl shadow-soft overflow-hidden transition-all duration-200;
+    @apply bg-white rounded-xl border border-burrito-gray shadow-soft overflow-hidden transition-all duration-200;
   }
   
   .container-custom {

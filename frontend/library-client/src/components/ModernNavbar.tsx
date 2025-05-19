@@ -72,7 +72,7 @@ const ModernNavbar = () => {
             <div className="relative flex items-center justify-between h-16">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button*/}
-                <Disclosure.Button className={`relative inline-flex items-center justify-center rounded-md p-2 ${scrolled ? 'text-neutral-500 hover:bg-neutral-100' : 'text-white hover:bg-white/10'} focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500`}>
+                <Disclosure.Button className={`relative inline-flex items-center justify-center rounded-md p-2 ${scrolled ? 'text-burrito-brown hover:bg-burrito-beige' : 'text-white hover:bg-white/10'} focus:outline-none focus:ring-2 focus:ring-inset focus:ring-burrito-brown`}>
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -84,7 +84,7 @@ const ModernNavbar = () => {
               
               <div className="flex flex-1 items-center justify-between sm:justify-start">
                 <div className="flex items-center">
-                  <Link to="/" className={`flex items-center font-heading font-bold ${scrolled ? 'text-primary-700' : 'text-white'}`}>
+                  <Link to="/" className={`flex items-center font-heading font-bold ${scrolled ? 'text-burrito-brown' : 'text-white'}`}>
                     <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="h-10 w-10 mr-2 rounded-full object-cover" />
                     <span className="text-xl md:text-2xl whitespace-nowrap">Universidad de WSBurrito</span>
                   </Link>
@@ -97,8 +97,8 @@ const ModernNavbar = () => {
                       to={item.href}
                       className={classNames(
                         item.current 
-                          ? (scrolled ? 'text-primary-700 border-b-2 border-primary-600' : 'text-white border-b-2 border-white')
-                          : (scrolled ? 'text-neutral-600 hover:text-primary-700' : 'text-white/80 hover:text-white'),
+                          ? (scrolled ? 'text-burrito-brown border-b-2 border-burrito-brown' : 'text-white border-b-2 border-white')
+                          : (scrolled ? 'text-neutral-600 hover:text-burrito-brown' : 'text-white/80 hover:text-white'),
                         'px-3 py-2 text-sm font-medium transition-colors duration-200'
                       )}
                       aria-current={item.current ? 'page' : undefined}
@@ -110,16 +110,16 @@ const ModernNavbar = () => {
               </div>
               
               <div className="flex items-center gap-4">
-                <button className={`hidden sm:flex items-center justify-center p-2 rounded-full ${scrolled ? 'text-neutral-500 hover:bg-neutral-100' : 'text-white hover:bg-white/10'}`}>
+                <button className={`hidden sm:flex items-center justify-center p-2 rounded-full ${scrolled ? 'text-burrito-brown hover:bg-burrito-beige' : 'text-white hover:bg-white/10'}`}>
                   <MagnifyingGlassIcon className="h-5 w-5" />
                 </button>
                 
                 {isAuthenticated ? (
                   <Menu as="div" className="relative">
                     <div>
-                      <Menu.Button className={`flex rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2`}>
+                      <Menu.Button className={`flex rounded-full focus:outline-none focus:ring-2 focus:ring-burrito-brown focus:ring-offset-2`}>
                         <span className="sr-only">Open user menu</span>
-                        <div className="h-9 w-9 rounded-full bg-primary-600 flex items-center justify-center text-white font-medium text-sm shadow-sm">
+                        <div className="h-9 w-9 rounded-full bg-burrito-brown flex items-center justify-center text-white font-medium text-sm shadow-sm">
                           {user?.userName.charAt(0).toUpperCase()}
                         </div>
                       </Menu.Button>
@@ -179,7 +179,7 @@ const ModernNavbar = () => {
                   <div className="flex items-center gap-3">
                     <Link
                       to="/login"
-                      className={`text-sm font-medium ${scrolled ? 'text-neutral-700 hover:text-primary-700' : 'text-white hover:text-white/80'}`}
+                      className={`text-sm font-medium ${scrolled ? 'text-burrito-brown hover:text-burrito-burgundy' : 'text-white hover:text-white/80'}`}
                     >
                       Login
                     </Link>
@@ -204,8 +204,8 @@ const ModernNavbar = () => {
                   to={item.href}
                   className={classNames(
                     item.current
-                      ? 'bg-primary-50 text-primary-700'
-                      : 'text-neutral-600 hover:bg-neutral-50 hover:text-primary-700',
+                      ? 'bg-burrito-beige text-burrito-brown'
+                      : 'text-neutral-600 hover:bg-burrito-beige hover:text-burrito-brown',
                     'block rounded-md px-3 py-2 text-base font-medium'
                   )}
                   aria-current={item.current ? 'page' : undefined}

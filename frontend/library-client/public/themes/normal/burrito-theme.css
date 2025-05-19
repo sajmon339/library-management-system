@@ -1,0 +1,71 @@
+/* Burrito Theme CSS Variables */
+:root {
+  --burrito-brown: #703512;
+  --tortilla-beige: #FFE4B2;
+  --tomato-red: #EF4444;
+  --guac-green: #68B684;
+  --cheese-yellow: #FFC93C;
+  --warm-gray: #E5DED6;
+  --burgundy: #802418;
+}
+
+/* Global overrides */
+body {
+  background-color: var(--tortilla-beige);
+}
+
+/* Button styles */
+.btn-burrito-primary {
+  background-color: var(--burrito-brown);
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.25rem;
+}
+
+.btn-burrito-primary:hover {
+  background-color: var(--burgundy);
+}
+
+.btn-burrito-secondary {
+  background-color: var(--cheese-yellow);
+  color: var(--burrito-brown);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.25rem;
+}
+
+.btn-burrito-secondary:hover {
+  background-color: #f8bb28;
+}
+
+.btn-burrito-accent {
+  background-color: var(--tomato-red);
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.25rem;
+}
+
+.btn-burrito-accent:hover {
+  background-color: #d73333;
+}
+
+/* Card styles */
+.card-burrito {
+  background-color: white;
+  border: 1px solid var(--warm-gray);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Text colors */
+.text-burrito-brown {
+  color: var(--burrito-brown);
+}
+
+.text-burrito-burgundy {
+  color: var(--burgundy);
+}
+
+.bg-burrito-gradient {
+  background: linear-gradient(to right, var(--burrito-brown), var(--burgundy));
+}
