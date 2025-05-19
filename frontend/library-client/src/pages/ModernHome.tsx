@@ -36,7 +36,7 @@ const ModernHome = () => {
   return (
     <div className="bg-burrito-beige min-h-screen">
       {/* Hero section with a modern, full-width design */}
-      <section className="relative h-[90vh] flex items-center">
+      <section className="relative h-[90vh] flex items-center hero-section">
         <div className="absolute inset-0 bg-gradient-to-r from-burrito-brown/90 to-burrito-burgundy/80 z-10" />
         <div className="absolute inset-0">
           <img

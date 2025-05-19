@@ -13,6 +13,37 @@ const ModernNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const [hasDarkBackground, setHasDarkBackground] = useState(false);
+
+  // Detect if the page has a dark background or hero image
+  useEffect(() => {
+    const checkBackgroundColor = () => {
+      // Look for a hero element, dark-background-marker, or full-page image within the viewport
+      const heroElements = document.querySelectorAll('.hero-section, .dark-background-marker, section[style*="background-image"]');
+      
+      if (heroElements.length > 0) {
+        // Found elements that indicate a dark background
+        setHasDarkBackground(true);
+        return;
+      }
+      
+      // If we reach here, no explicit markers were found
+      // Check if we're on the home page (which we know has a dark hero)
+      if (location.pathname === '/') {
+        setHasDarkBackground(true);
+        return;
+      }
+      
+      // Default to using the brown navbar background for non-hero pages
+      setHasDarkBackground(false);
+    };
+
+    // Check on page load and after a short delay to ensure DOM is fully loaded
+    checkBackgroundColor();
+    const timeoutId = setTimeout(checkBackgroundColor, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, [location.pathname]);
 
   // Track scroll position to change navbar style
   useEffect(() => {
@@ -65,14 +96,24 @@ const ModernNavbar = () => {
     { name: 'Change Password', href: '/change-password', icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-2"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg> },
   ];
 
-  return (      <Disclosure as="nav" className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-1' : 'bg-transparent pt-3'}`}>
+  return (      <Disclosure as="nav" className={`fixed w-full z-50 transition-all duration-300 ${
+    scrolled 
+      ? 'bg-white shadow-md py-1' 
+      : hasDarkBackground 
+        ? 'bg-transparent pt-3' 
+        : 'bg-burrito-brown pt-3'
+  }`}>
       {({ open }) => (
         <>
           <div className="container-custom">
             <div className="relative flex items-center justify-between h-16">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button*/}
-                <Disclosure.Button className={`relative inline-flex items-center justify-center rounded-md p-2 ${scrolled ? 'text-burrito-brown hover:bg-burrito-beige' : 'text-white hover:bg-white/10'} focus:outline-none focus:ring-2 focus:ring-inset focus:ring-burrito-brown`}>
+                <Disclosure.Button className={`relative inline-flex items-center justify-center rounded-md p-2 ${
+                  scrolled 
+                    ? 'text-burrito-brown hover:bg-burrito-beige' 
+                    : 'text-white hover:bg-white/10'
+                } focus:outline-none focus:ring-2 focus:ring-inset focus:ring-burrito-brown`}>
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -84,7 +125,11 @@ const ModernNavbar = () => {
               
               <div className="flex flex-1 items-center justify-between sm:justify-start">
                 <div className="flex items-center">
-                  <Link to="/" className={`flex items-center font-heading font-bold ${scrolled ? 'text-burrito-brown' : 'text-white'}`}>
+                  <Link to="/" className={`flex items-center font-heading font-bold ${
+                    scrolled 
+                      ? 'text-burrito-brown' 
+                      : 'text-white'
+                  }`}>
                     <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="h-10 w-10 mr-2 rounded-full object-cover" />
                     <span className="text-xl md:text-2xl whitespace-nowrap">Universidad de WSBurrito</span>
                   </Link>
@@ -97,8 +142,12 @@ const ModernNavbar = () => {
                       to={item.href}
                       className={classNames(
                         item.current 
-                          ? (scrolled ? 'text-burrito-brown border-b-2 border-burrito-brown' : 'text-white border-b-2 border-white')
-                          : (scrolled ? 'text-neutral-600 hover:text-burrito-brown' : 'text-white/80 hover:text-white'),
+                          ? (scrolled 
+                              ? 'text-burrito-brown border-b-2 border-burrito-brown' 
+                              : 'text-white border-b-2 border-white')
+                          : (scrolled 
+                              ? 'text-neutral-600 hover:text-burrito-brown' 
+                              : 'text-white/80 hover:text-white'),
                         'px-3 py-2 text-sm font-medium transition-colors duration-200'
                       )}
                       aria-current={item.current ? 'page' : undefined}
@@ -179,7 +228,11 @@ const ModernNavbar = () => {
                   <div className="flex items-center gap-3">
                     <Link
                       to="/login"
-                      className={`text-sm font-medium ${scrolled ? 'text-burrito-brown hover:text-burrito-burgundy' : 'text-white hover:text-white/80'}`}
+                      className={`text-sm font-medium ${
+                        scrolled 
+                          ? 'text-burrito-brown hover:text-burrito-burgundy' 
+                          : 'text-white hover:text-white/80'
+                      }`}
                     >
                       Login
                     </Link>
