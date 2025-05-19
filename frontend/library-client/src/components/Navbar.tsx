@@ -50,7 +50,7 @@ const Navbar = () => {
   ];
 
   return (
-    <Disclosure as="nav" className="bg-gray-800">
+    <Disclosure as="nav" className="bg-gray-800 shadow-md">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -67,13 +67,19 @@ const Navbar = () => {
                 </Disclosure.Button>
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex flex-shrink-0 items-center">
-                  <Link to="/" className="text-white font-bold text-xl">
-                    Library
+                <div className="flex flex-shrink-0 items-center mr-2">
+                  <Link to="/" className="flex items-center space-x-2">
+                    <img 
+                      src="/burrito_icon_plain.png" 
+                      alt="WSBurrito Logo" 
+                      className="h-8 w-8 rounded-full"
+                    />
+                    <span className="text-white font-bold text-lg whitespace-nowrap hidden xs:inline">Universidad de WSBurrito</span>
+                    <span className="text-white font-bold text-lg whitespace-nowrap xs:hidden">UdW</span>
                   </Link>
                 </div>
-                <div className="hidden sm:ml-6 sm:block">
-                  <div className="flex space-x-4">
+                <div className="hidden sm:ml-4 sm:block flex-grow">
+                  <div className="flex space-x-3">
                     {navigation.map((item) => (
                       <Link
                         key={item.name}
@@ -82,7 +88,7 @@ const Navbar = () => {
                           item.current
                             ? 'bg-gray-900 text-white'
                             : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                          'rounded-md px-3 py-2 text-sm font-medium'
+                          'rounded-md px-2 py-2 text-sm font-medium'
                         )}
                         aria-current={item.current ? 'page' : undefined}
                       >
@@ -92,7 +98,7 @@ const Navbar = () => {
                   </div>
                 </div>
               </div>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+              <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-auto sm:pr-0">
                 {isAuthenticated ? (
                   <Menu as="div" className="relative ml-3">
                     <div>
@@ -150,7 +156,7 @@ const Navbar = () => {
                     </Transition>
                   </Menu>
                 ) : (
-                  <div className="flex space-x-4">
+                  <div className="flex space-x-2">
                     <Link
                       to="/login"
                       className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
@@ -170,7 +176,15 @@ const Navbar = () => {
           </div>
 
           <Disclosure.Panel className="sm:hidden">
-            <div className="space-y-1 px-2 pb-3 pt-2">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <div className="flex items-center space-x-2 px-3 py-2 border-b border-gray-700 mb-2">
+                <img 
+                  src="/burrito_icon_plain.png" 
+                  alt="WSBurrito Logo" 
+                  className="h-7 w-7 rounded-full"
+                />
+                <span className="text-white font-bold text-base">Universidad de WSBurrito</span>
+              </div>
               {navigation.map((item) => (
                 <Disclosure.Button
                   key={item.name}

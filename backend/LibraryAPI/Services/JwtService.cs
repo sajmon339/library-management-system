@@ -9,10 +9,17 @@ namespace LibraryAPI.Services
     public class JwtService
     {
         private readonly IConfiguration _configuration;
+        private static readonly string _deploymentId = Guid.NewGuid().ToString();  // Unique ID for this deployment
 
         public JwtService(IConfiguration configuration)
         {
             _configuration = configuration;
+        }
+        
+        // Method to get the current deployment ID
+        public static string GetDeploymentId()
+        {
+            return _deploymentId;
         }
 
         public string GenerateJwtToken(User user)
@@ -33,7 +40,7 @@ namespace LibraryAPI.Services
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.Role, user.Role.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddHours(12),  // Changed from 7 days to 12 hours for better security
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = issuer,
                 Audience = audience

@@ -209,7 +209,7 @@ const ModernMyBooks = () => {
                                 target.onerror = null; // Prevent infinite error loop
                                 target.style.display = 'none';
                                 (target.parentNode as HTMLElement).innerHTML = `
-                                  <div class="h-full w-full bg-gradient-to-r from-primary-600 to-primary-400 flex items-center justify-center p-6">
+                                  <div class="h-full w-full bg-gradient-to-r from-primary-600 to-primary-400 flex items-center justify-center p-2">
                                     <div class="text-center text-white">
                                       <h3 class="text-xl font-semibold mb-1">${checkOut.bookTitle}</h3>
                                       <p class="opacity-90">by ${checkOut.catalogNumber}</p>

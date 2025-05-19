@@ -7,7 +7,6 @@ import { Book } from '../types/book.js';
 import CheckOutModal from '../components/CheckOutModal.js';
 import { 
   CalendarIcon, 
-  BookOpenIcon, 
   UserIcon, 
   BuildingLibraryIcon,
   ArrowLeftIcon
@@ -192,7 +191,7 @@ const ModernBookDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Book cover/image column */}
           <div className="lg:col-span-1">
-            <div className="bg-gradient-to-br from-primary-600 to-primary-400 aspect-[2/3] rounded-xl shadow-soft overflow-hidden flex items-center justify-center">
+            <div className="bg-gradient-to-br from-primary-600 to-primary-400 aspect-[2/3] rounded-xl shadow-soft overflow-hidden flex items-center justify-center p-2">
               {book.coverImagePath ? (
                 <img 
                   src={bookService.getBookCover(book.id)} 
@@ -207,7 +206,7 @@ const ModernBookDetail = () => {
                 />
               ) : (
                 <div className="text-center text-white p-6">
-                  <BookOpenIcon className="h-16 w-16 mx-auto mb-4 opacity-90" />
+                  <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="h-16 w-16 mx-auto mb-4 opacity-90 rounded-full object-cover" />
                   <h2 className="text-2xl font-bold mb-2">{book.title}</h2>
                   <p className="opacity-80">by {book.author}</p>
                 </div>

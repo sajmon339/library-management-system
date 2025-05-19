@@ -214,7 +214,7 @@ const ModernBooks = () => {
               <Link key={book.id} to={`/books/${book.id}`} className="group">
                 <div className="card h-full hover:shadow-lg overflow-hidden transition-all">
                   {/* Book cover - show actual cover if available, otherwise a gradient */}
-                  <div className="h-64 overflow-hidden bg-gradient-to-br from-primary-600 to-primary-400 flex items-center justify-center p-6">
+                  <div className="h-64 overflow-hidden bg-gradient-to-br from-primary-600 to-primary-400 flex items-center justify-center p-2">
                     {book.coverImagePath ? (
                       <img 
                         src={bookService.getBookCover(book.id)} 

@@ -4,7 +4,6 @@ import { bookService } from '../api/bookService.js';
 import { userService } from '../api/userService.js';
 import { checkOutService } from '../api/checkOutService.js';
 import { 
-  BookOpenIcon, 
   UserGroupIcon, 
   ClockIcon, 
   CheckCircleIcon,
@@ -115,7 +114,7 @@ const ModernAdminDashboard = () => {
               <div className="card p-6">
                 <div className="flex items-start">
                   <div className="rounded-full bg-primary-100 p-3 mr-4">
-                    <BookOpenIcon className="h-7 w-7 text-primary-600" />
+                    <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="h-7 w-7 rounded-full object-cover" />
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-neutral-500">Books</h3>

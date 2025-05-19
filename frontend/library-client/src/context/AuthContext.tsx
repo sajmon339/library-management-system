@@ -4,6 +4,26 @@ import type { User, LoginDto, UpdateProfileDto } from '../types/user.js';
 import { userService } from '../api/userService.js';
 import type { AuthResponse } from '../api/userService.js';
 import api from '../api/api.js';
+import { APP_VERSION, SESSION_VERSION_KEY, isSessionValid, updateSessionVersion } from '../utils/version.js';
+
+// Helper function to check if a JWT token is expired
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    
+    const { exp } = JSON.parse(jsonPayload);
+    const expired = Date.now() >= exp * 1000;
+    console.log(`Token expiration check: expires at ${new Date(exp * 1000).toLocaleString()}, expired: ${expired}`);
+    return expired;
+  } catch (error) {
+    console.error('Error checking token expiration:', error);
+    return true; // If we can't validate the token, consider it expired
+  }
+};
 
 interface AuthContextType {
   user: User | null;
@@ -21,6 +41,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   
+  // Add periodic token validation
+  useEffect(() => {
+    // Only run validation if we have a token
+    if (!token) return;
+    
+    // Check token validity every 5 minutes
+    const validateInterval = setInterval(() => {
+      if (token && isTokenExpired(token)) {
+        console.log('AuthContext: Token expired during active session, logging out');
+        // Clear state and storage
+        setToken(null);
+        setUser(null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        delete api.defaults.headers.common['Authorization'];
+      }
+    }, 5 * 60 * 1000);
+    
+    return () => {
+      clearInterval(validateInterval);
+    };
+  }, [token]);
+  
   useEffect(() => {
     // Check if the user is already logged in (from localStorage)
     const storedToken = localStorage.getItem('token');
@@ -34,17 +77,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (storedToken && storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
-        setToken(storedToken);
-        setUser(parsedUser);
         
-        // Set the token in api headers
-        api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-        
-        console.log('AuthContext: Restored auth state from localStorage', {
-          userId: parsedUser.id,
-          userName: parsedUser.userName,
-          role: parsedUser.role
-        });
+        // Check if token is expired OR if app version has changed
+        if (isTokenExpired(storedToken) || !isSessionValid()) {
+          console.log('AuthContext: Session invalid - token expired or app version changed');
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          setToken(null);
+          setUser(null);
+        } else {
+          setToken(storedToken);
+          setUser(parsedUser);
+          
+          // Set the token in api headers
+          api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+          
+          console.log('AuthContext: Restored auth state from localStorage', {
+            userId: parsedUser.id,
+            userName: parsedUser.userName,
+            role: parsedUser.role
+          });
+        }
       } catch (error) {
         console.error('AuthContext: Error parsing stored user:', error);
         // If error in parsing, clear localStorage
@@ -79,6 +132,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       
+      // Store the current app version to validate the session in future
+      updateSessionVersion();
+      
       // Update Authorization header for future requests
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
@@ -106,6 +162,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Clear localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem(SESSION_VERSION_KEY);
     
     // Clear Authorization header
     delete api.defaults.headers.common['Authorization'];

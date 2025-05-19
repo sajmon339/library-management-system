@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
-import { BookOpenIcon, ClockIcon, UserGroupIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, UserGroupIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 import { bookService } from '../api/bookService.js';
 import { Book } from '../types/book.js';
 
@@ -83,7 +83,7 @@ const ModernHome = () => {
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="flex items-center p-6 rounded-xl bg-neutral-50 shadow-soft">
-              <BookOpenIcon className="w-12 h-12 text-primary-600 mr-4" />
+              <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="w-12 h-12 text-primary-600 mr-4 rounded-full object-cover" />
               <div>
                 <div className="text-3xl font-bold text-neutral-900">10,000+</div>
                 <div className="text-neutral-600">Books Available</div>

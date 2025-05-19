@@ -2,7 +2,6 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { RegisterUserDto } from '../types/user.js';
-import { BookOpenIcon } from '@heroicons/react/24/outline';
 import { userService } from '../api/userService.js';
 
 const ModernRegister = () => {
@@ -46,8 +45,8 @@ const ModernRegister = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
           <Link to="/" className="inline-flex items-center text-3xl font-heading font-bold text-primary-700 mb-8">
-            <BookOpenIcon className="h-8 w-8 mr-2" />
-            <span>LibraryHub</span>
+            <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="h-10 w-10 mr-2 rounded-full object-cover" />
+            <span>Universidad de WSBurrito</span>
           </Link>
           <h2 className="text-3xl font-heading font-bold text-neutral-900">
             Create your account

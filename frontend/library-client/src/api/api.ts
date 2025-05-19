@@ -10,6 +10,42 @@ const api = axios.create({
   },
 });
 
+// Function to check if a token was issued for a previous deployment
+const isTokenFromPreviousDeployment = (token: string): boolean => {
+  try {
+    // Parse the JWT
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map((c: string) => {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    
+    const payload = JSON.parse(jsonPayload);
+    
+    // Store the current deployment ID in sessionStorage 
+    // This ensures it's unique per browser tab and session
+    let currentDeployId = sessionStorage.getItem('current_deployment_id');
+    
+    // If this is our first request and we don't have a deployment ID yet
+    if (!currentDeployId && payload.deployment_id) {
+      // Store the token's deployment ID as the current one
+      sessionStorage.setItem('current_deployment_id', payload.deployment_id);
+      return false;
+    }
+    
+    // If we have both IDs but they don't match, the application has been redeployed
+    if (currentDeployId && payload.deployment_id && currentDeployId !== payload.deployment_id) {
+      console.log(`API: Token is from a previous deployment. Current: ${currentDeployId}, Token: ${payload.deployment_id}`);
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('Error checking token deployment ID:', error);
+    return false; // Don't invalidate if we can't check
+  }
+};
+
 // Request interceptor for adding auth token
 api.interceptors.request.use(
   (config) => {
@@ -23,6 +59,20 @@ api.interceptors.request.use(
     if (!config.headers.Authorization) {
       const token = localStorage.getItem('token');
       if (token) {
+        // Check if the token is from a previous deployment
+        if (isTokenFromPreviousDeployment(token)) {
+          // Clear auth data if the app has been redeployed
+          console.log('API: Clearing stale auth data after redeployment');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          
+          // Only redirect if not already on the login page
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/login?redeployed=true';
+          }
+          return config;
+        }
+        
         config.headers.Authorization = `Bearer ${token}`;
         console.log('API: Added token to request headers');
       } else {
@@ -64,6 +114,40 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       console.log('API: Authentication error encountered');
       originalRequest._retry = true;
+      
+      // Check if token is expired
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Import the isTokenExpired function
+        try {
+          const isExpired = (function checkTokenExpiration(token: string) {
+            try {
+              const base64Url = token.split('.')[1];
+              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+              const jsonPayload = decodeURIComponent(atob(base64).split('').map((c: string) => {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+              }).join(''));
+              
+              const { exp } = JSON.parse(jsonPayload);
+              const expired = Date.now() >= exp * 1000;
+              console.log(`Token expiration check: expires at ${new Date(exp * 1000).toLocaleString()}, expired: ${expired}`);
+              return expired;
+            } catch (error) {
+              return true; // If we can't validate the token, consider it expired
+            }
+          })(token);
+          
+          if (isExpired) {
+            console.log('API: Token is expired, logging out');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login?expired=true';
+            return Promise.reject(error);
+          }
+        } catch (e) {
+          console.error('Error checking token expiration', e);
+        }
+      }
       
       // Attempt to get a fresh token from localStorage
       // This can help if the token was updated in another tab

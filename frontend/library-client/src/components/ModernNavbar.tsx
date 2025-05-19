@@ -1,7 +1,7 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, BookOpenIcon, MagnifyingGlassIcon, UserIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon, UserIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext.js';
 
 function classNames(...classes: string[]) {
@@ -65,8 +65,7 @@ const ModernNavbar = () => {
     { name: 'Change Password', href: '/change-password', icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-2"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg> },
   ];
 
-  return (
-    <Disclosure as="nav" className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-1' : 'bg-transparent pt-3'}`}>
+  return (      <Disclosure as="nav" className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-1' : 'bg-transparent pt-3'}`}>
       {({ open }) => (
         <>
           <div className="container-custom">
@@ -83,15 +82,15 @@ const ModernNavbar = () => {
                 </Disclosure.Button>
               </div>
               
-              <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+              <div className="flex flex-1 items-center justify-between sm:justify-start">
                 <div className="flex items-center">
-                  <Link to="/" className={`flex items-center text-2xl font-heading font-bold ${scrolled ? 'text-primary-700' : 'text-white'}`}>
-                    <BookOpenIcon className="h-8 w-8 mr-2" />
-                    <span>LibraryHub</span>
+                  <Link to="/" className={`flex items-center font-heading font-bold ${scrolled ? 'text-primary-700' : 'text-white'}`}>
+                    <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="h-10 w-10 mr-2 rounded-full object-cover" />
+                    <span className="text-xl md:text-2xl whitespace-nowrap">Universidad de WSBurrito</span>
                   </Link>
                 </div>
                 
-                <div className="hidden sm:ml-10 sm:flex sm:space-x-4 items-center">
+                <div className="hidden sm:ml-auto sm:flex sm:space-x-4 items-center">
                   {navigation.map((item) => (
                     <Link
                       key={item.name}
