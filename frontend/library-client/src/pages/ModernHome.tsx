@@ -42,7 +42,7 @@ const ModernHome = () => {
   return (
     <div className="bg-burrito-beige min-h-screen">
       {/* Hero section with a modern, full-width design */}
-      <section className="relative h-[90vh] flex items-center hero-section">
+      <section className="relative min-h-[90vh] pt-20 pb-16 flex items-center justify-center hero-section">
         <div className="absolute inset-0 bg-gradient-to-r from-burrito-brown/90 to-burrito-burgundy/80 z-10" />
         <div className="absolute inset-0">
           <img
@@ -52,12 +52,12 @@ const ModernHome = () => {
           />
         </div>
         
-        <div className="container-custom relative z-20 mt-16">
-          <div className="max-w-2xl">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-heading font-bold text-white mb-6 leading-tight">
+        <div className="container-custom relative z-20">
+          <div className="max-w-2xl mx-auto sm:mx-0">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6 leading-tight">
               {t('home.title')} <span className="text-accent-400">{t('home.subtitle')}</span>
             </h1>
-            <p className="text-xl text-white/90 mb-8 leading-relaxed">
+            <p className="text-lg sm:text-xl text-white/90 mb-8 leading-relaxed">
               {t('home.description')}
             </p>
             <div className="flex flex-wrap gap-4">
@@ -116,7 +116,7 @@ const ModernHome = () => {
               <AcademicCapIcon className="w-12 h-12 text-primary-600 mr-4" />
               <div>
                 <div className="text-3xl font-bold text-neutral-900">50+</div>
-                <div className="text-neutral-600">{t('home.genresCount')}</div>
+                <div className="text-neutral-600">{t('home.genreCategories')}</div>
               </div>
             </div>
           </div>

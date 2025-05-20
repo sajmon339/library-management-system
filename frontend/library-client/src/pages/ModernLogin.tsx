@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext.js';
 import type { LoginDto } from '../types/user.js';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../utils/usePageTitle.js';
+import DeviceInfo from '../components/DeviceInfo.js';
 
 const ModernLogin = () => {
   const [formData, setFormData] = useState<LoginDto>({
@@ -30,7 +31,11 @@ const ModernLogin = () => {
     setError(null);
     setIsLoading(true);
     
-    console.log('Login attempt with:', { email: formData.email });
+    console.log('Login attempt with:', { 
+      email: formData.email,
+      userAgent: navigator.userAgent,
+      isMobile: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    });
     
     try {
       // Validate form data
@@ -49,18 +54,29 @@ const ModernLogin = () => {
     } catch (err: any) {
       console.error('Login error details:', err);
       
+      // Display detailed error info for debugging
+      console.error('Error breakdown:', {
+        message: err.message,
+        responseStatus: err.response?.status,
+        responseData: err.response?.data,
+        isAxiosError: err.isAxiosError,
+        stack: err.stack
+      });
+      
       // Enhanced error handling to extract message from different error formats
       if (err.response?.data?.message) {
         // Extract message directly from API response
         setError(err.response.data.message);
       } else if (err.response?.status === 401) {
         setError('Invalid email or password');
+      } else if (err.response?.status >= 500) {
+        setError(`Server error (${err.response.status}): The server is experiencing issues. Please try again later.`);
       } else if (err.response?.data) {
         // Handle various response data formats
         if (typeof err.response.data === 'string') {
           setError(err.response.data);
         } else if (typeof err.response.data === 'object') {
-          setError(err.response.data.message || 'Server error occurred');
+          setError(err.response.data.message || JSON.stringify(err.response.data));
         } else {
           setError('Authentication failed. Please try again.');
         }
@@ -76,6 +92,7 @@ const ModernLogin = () => {
   
   return (
     <div className="min-h-screen auto-theme-bg flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <DeviceInfo />
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
           <Link to="/" className="inline-flex items-center text-3xl font-heading font-bold text-primary-700 mb-8">
@@ -118,9 +135,9 @@ const ModernLogin = () => {
             </div>
           )}
           
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit} autoComplete="on">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 {t('login.email')}
               </label>
               <input
@@ -128,7 +145,8 @@ const ModernLogin = () => {
                 name="email"
                 type="email"
                 required
-                className="appearance-none block w-full px-4 py-3 border border-neutral-300 rounded-lg text-neutral-800 bg-white shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 transition duration-150"
+                autoComplete="email"
+                className="appearance-none block w-full px-4 py-3 border border-neutral-300 rounded-lg text-neutral-800 bg-white shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 transition duration-150 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 dark:placeholder-neutral-500"
                 placeholder={t('login.email')}
                 value={formData.email}
                 onChange={handleChange}
@@ -137,12 +155,12 @@ const ModernLogin = () => {
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">
+                <label htmlFor="password" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   {t('login.password')}
                 </label>
                 <Link
                   to="/forgot-password"
-                  className="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors"
+                  className="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors dark:text-primary-400 dark:hover:text-primary-300"
                 >
                   {t('login.forgotPassword')}
                 </Link>
@@ -153,7 +171,7 @@ const ModernLogin = () => {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none block w-full px-4 py-3 border border-neutral-300 rounded-lg text-neutral-800 bg-white shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 transition duration-150"
+                className="appearance-none block w-full px-4 py-3 border border-neutral-300 rounded-lg text-neutral-800 bg-white shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 transition duration-150 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 dark:placeholder-neutral-500"
                 placeholder={t('login.password')}
                 value={formData.password}
                 onChange={handleChange}
@@ -164,7 +182,8 @@ const ModernLogin = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="btn btn-primary w-full py-3 px-4 text-base"
+                className="btn btn-primary w-full py-3 px-4 text-base focus:outline-none focus:ring-4 focus:ring-primary-400/50 touch-manipulation"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">
@@ -172,7 +191,7 @@ const ModernLogin = () => {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Signing in...
+                    {t('login.signingIn')}
                   </div>
                 ) : (
                   t('login.loginButton')

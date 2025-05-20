@@ -49,6 +49,7 @@ const LanguageSwitcher = ({
         >
           <GlobeEuropeAfricaIcon className="h-5 w-5" aria-hidden="true" />
           <span className="hidden sm:inline-block">{currentLanguage.flag}</span>
+          <span className="hidden sm:inline-block ml-1">{currentLanguage.code.toUpperCase()}</span>
           <ChevronDownIcon className="-mr-1 h-5 w-5" aria-hidden="true" />
         </Menu.Button>
       </div>

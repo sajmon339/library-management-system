@@ -9,6 +9,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
 
+using Microsoft.AspNetCore.HttpOverrides;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure CORS
@@ -16,12 +18,28 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.SetIsOriginAllowed(_ => true) // Allow any origin for development
+        policy.SetIsOriginAllowed(_ => true) // Required for Cloudflare tunnel
               .AllowAnyMethod()
               .AllowAnyHeader()
-              .AllowCredentials();
+              .AllowCredentials()
+              .WithExposedHeaders("Content-Disposition"); // For file downloads
     });
 });
+
+// Configure forwarded headers for Cloudflare
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
+                              ForwardedHeaders.XForwardedProto | 
+                              ForwardedHeaders.XForwardedHost;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+    options.RequireHeaderSymmetry = false;
+    options.ForwardLimit = null;
+});
+
+// Add HTTP client configuration
+builder.Services.AddHttpClient();
 
 // Database configuration
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -235,12 +253,29 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// Configure middleware
-app.UseHttpsRedirection();
+// Configure middleware for Cloudflare and proxies
+app.UseForwardedHeaders();
+
+// Enable CORS before other middleware
 app.UseCors();
+
+// Configure HTTPS redirection
+app.UseHttpsRedirection();
 
 // Enable static files to serve book covers
 app.UseStaticFiles();
+
+// Add security headers
+app.Use(async (context, next) =>
+{
+    // Add security headers
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
+    context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    
+    await next();
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,6 +1,7 @@
 {
   "app": {
-    "title": "Universidad de WSBurrito"
+    "title": "Universidad de WSBurrito",
+    "shortTitle": "WSBurrito"
   },
   "common": {
     "loading": "Loading...",
@@ -83,14 +84,14 @@
     "readingJourney": "Ready to Start Your Reading Journey?",
     "joinDescription": "Join our library today and get access to thousands of books, personalized recommendations, and a vibrant community of fellow readers.",
     "digitalAccess": "Digital Access",
-    "genres": "Genres",
+    "genreCategories": "Genres",
     "quickStats": {
       "title": "Library at a Glance",
       "totalBooks": "Total Books",
       "availableBooks": "Books Available",
       "members": "Active Members"
     },
-    "genres": "Explore by Genre",
+    "exploreByGenre": "Explore by Genre",
     "viewMore": "View More"
   },
   "books": {
@@ -143,6 +144,7 @@
     "newUser": "New user?",
     "createAccount": "Create an account",
     "loginButton": "Log In",
+    "signingIn": "Signing in...",
     "invalidCredentials": "Invalid email or password. Please try again."
   },
   "register": {

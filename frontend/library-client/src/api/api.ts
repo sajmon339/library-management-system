@@ -7,7 +7,9 @@ const api = axios.create({
   baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
+  withCredentials: false,
 });
 
 // Function to check if a token was issued for a previous deployment
@@ -105,8 +107,26 @@ api.interceptors.response.use(
     console.error('API: Response error:', {
       url: error.config?.url,
       status: error.response?.status,
-      message: error.response?.data || error.message
+      message: error.response?.data || error.message,
+      isMobile: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
     });
+    
+    // Improve error reporting for network issues that commonly occur on mobile
+    if (!error.response) {
+      // No response from server (network error)
+      console.error('API: Network error - no response received');
+      
+      // Check if online - helpful for mobile debugging
+      if (!navigator.onLine) {
+        error.message = 'You appear to be offline. Please check your internet connection.';
+      } else {
+        error.message = 'Unable to connect to the server. Please try again later.';
+      }
+    } else if (error.response.status === 500) {
+      console.error('API: 500 Server error', error.response.data);
+      // Provide more user-friendly message for server errors
+      error.message = 'The server encountered an error. Please try again later.';
+    }
     
     const originalRequest = error.config;
     

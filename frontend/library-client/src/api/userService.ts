@@ -9,7 +9,8 @@ interface AuthResponse {
 const loginUser = async (credentials: LoginDto) => {
   console.log('userService: Attempting login API call with credentials:', {
     email: credentials.email,
-    passwordProvided: !!credentials.password
+    passwordProvided: !!credentials.password,
+    platform: navigator.userAgent
   });
   
   try {
@@ -24,7 +25,21 @@ const loginUser = async (credentials: LoginDto) => {
       throw new Error('Email and password are required');
     }
     
-    const response = await api.post<AuthResponse>('/auth/login', payload);
+    console.log('userService: Sending login request to:', `${api.defaults.baseURL}/auth/login`);
+    
+    const response = await api.post<AuthResponse>('/auth/login', payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+    
+    console.log('userService: Raw response:', {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+      dataType: typeof response.data,
+    });
     
     if (!response.data || !response.data.token || !response.data.user) {
       console.error('userService: Invalid response structure from login endpoint', {
@@ -48,6 +63,14 @@ const loginUser = async (credentials: LoginDto) => {
     return response.data;
   } catch (error: any) {
     console.error('userService: Login API call failed:', error);
+    console.error('userService: Error details:', {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      responseData: error.response?.data,
+      stack: error.stack
+    });
+    
     if (error.response?.status === 0) {
       throw new Error('Network error: Cannot connect to the server');
     }

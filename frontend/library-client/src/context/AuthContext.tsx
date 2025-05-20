@@ -112,6 +112,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (credentials: LoginDto) => {
     try {
       console.log('AuthContext: Attempting login with email:', credentials.email);
+      console.log('AuthContext: Device info:', {
+        userAgent: navigator.userAgent,
+        isMobile: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent),
+        viewport: `${window.innerWidth}x${window.innerHeight}`,
+        isOnline: navigator.onLine
+      });
+      
       const response: AuthResponse = await userService.loginUser(credentials);
       console.log('AuthContext: Login response received:', { token: response.token ? 'Token received' : 'No token', userReceived: !!response.user });
       
@@ -128,12 +135,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(token);
       setUser(user);
       
-      // Store in localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      // Clear any previous storage first to prevent conflicts
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       
-      // Store the current app version to validate the session in future
-      updateSessionVersion();
+      // Then store in localStorage with a small delay to ensure proper write
+      // This can help with mobile browser issues
+      setTimeout(() => {
+        try {
+          localStorage.setItem('token', token);
+          localStorage.setItem('user', JSON.stringify(user));
+          
+          // Store the current app version to validate the session in future
+          updateSessionVersion();
+          
+          console.log('AuthContext: Data successfully stored in localStorage');
+        } catch (storageError) {
+          console.error('AuthContext: Error storing data in localStorage:', storageError);
+          // Continue even if localStorage fails - we still have the data in memory
+        }
+      }, 100);
       
       // Update Authorization header for future requests
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;

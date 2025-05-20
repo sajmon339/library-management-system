@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
+import { Disclosure, DisclosureButton, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon, UserIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext.js';
 import { useTheme } from '../context/ThemeContext.js';
@@ -21,6 +21,7 @@ const ModernNavbar = () => {
   const [hasDarkBackground, setHasDarkBackground] = useState(false);
   
   const isDarkMode = theme === 'dark';
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   // Generate dynamic styles based on theme and scroll state
   const styles = useMemo(() => {
@@ -31,17 +32,17 @@ const ModernNavbar = () => {
             ? 'bg-burrito-dark-surface text-burrito-dark-text shadow-md py-1' 
             : 'bg-burrito-light-surface shadow-md py-1'
           : hasDarkBackground 
-            ? 'bg-transparent pt-3' 
+            ? 'bg-transparent pt-2' 
             : isDarkMode 
-              ? 'bg-burrito-dark-bg text-burrito-dark-text pt-3' 
-              : 'bg-burrito-brown pt-3'
+              ? 'bg-burrito-dark-bg text-burrito-dark-text pt-2' 
+              : 'bg-burrito-brown pt-2'
       }`,
       menuButton: `relative inline-flex items-center justify-center rounded-md p-2 ${
         scrolled 
           ? isDarkMode
-            ? 'text-burrito-gray hover:bg-burrito-charcoal'
-            : 'text-burrito-brown hover:bg-burrito-beige' 
-          : 'text-white hover:bg-white/10'
+            ? 'text-burrito-gray hover:bg-burrito-charcoal bg-burrito-dark-surface/70'
+            : 'text-burrito-brown hover:bg-burrito-beige bg-white/70' 
+          : 'text-white hover:bg-white/10 bg-burrito-burgundy/20'
       } focus:outline-none focus:ring-2 focus:ring-inset focus:ring-burrito-brown`,
       logoText: `flex items-center font-heading font-bold ${
         scrolled 
@@ -69,13 +70,13 @@ const ModernNavbar = () => {
             : 'text-burrito-brown hover:text-burrito-burgundy' 
           : 'text-white hover:text-white/80'
       }`,
-      mobileMenu: `sm:hidden ${isDarkMode ? 'bg-burrito-charcoal shadow-lg' : 'bg-white shadow-lg'}`,
-      mobileThemeToggle: `flex items-center justify-center p-3 rounded-md ${
+      mobileMenu: `sm:hidden ${isDarkMode ? 'bg-burrito-charcoal shadow-lg' : 'bg-white shadow-lg'} max-h-[85vh] overflow-y-auto z-50`,
+      mobileThemeToggle: `flex items-center justify-center py-2 px-3 rounded-md ${
         isDarkMode
           ? 'bg-burrito-burgundy/20 text-burrito-cheese'
           : 'bg-burrito-beige text-burrito-brown'
       }`,
-      mobileLangSwitcher: `p-3 rounded-md ${
+      mobileLangSwitcher: `py-2 px-3 rounded-md ${
         isDarkMode
           ? 'bg-burrito-burgundy/20 text-burrito-cheese'
           : 'bg-burrito-beige text-burrito-brown'
@@ -167,33 +168,32 @@ const ModernNavbar = () => {
   return (      <Disclosure as="nav" className={styles.navbar}>
       {({ open }) => (
         <>
-          <div className="container-custom">
-            <div className="relative flex items-center justify-between h-16">
+          <div className="container-custom px-3 sm:px-4">
+            <div className="relative flex items-center justify-between h-14 sm:h-16">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button*/}
-                <Disclosure.Button className={styles.menuButton}>
+                <DisclosureButton className={styles.menuButton}>
                   <span className="sr-only">{t('common.toggleMenu')}</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
                   ) : (
                     <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                   )}
-                </Disclosure.Button>
+                </DisclosureButton>
               </div>
               
               <div className="flex flex-1 items-center justify-between sm:justify-start">
-                <div className="flex items-center">
+                <div className="flex-shrink-0 pl-10 sm:pl-0">
                   <Link to="/" className={styles.logoText}>
                     <img 
                       src={isDarkMode ? "/themes/dark/burrito_full_dark.png" : "/burrito_icon_plain.png"} 
-                      alt="Universidad de WSBurrito Logo" 
-                      className="h-10 w-10 mr-2 rounded-full object-cover" 
+                      alt="WSBurrito Logo" 
+                      className="h-9 w-9 sm:h-11 sm:w-11 rounded-full object-cover"
                     />
-                    <span className="text-xl md:text-2xl whitespace-normal">Universidad de WSBurrito</span>
                   </Link>
                 </div>
                 
-                <div className="hidden sm:ml-auto sm:flex sm:space-x-4 items-center">
+                <div className="hidden sm:flex sm:ml-6 lg:ml-8 sm:space-x-2 lg:space-x-4 items-center flex-grow justify-center">
                   {navigation.map((item) => (
                     <Link
                       key={item.name}
@@ -210,7 +210,7 @@ const ModernNavbar = () => {
                                 ? 'text-burrito-gray hover:text-burrito-cheese'
                                 : 'text-neutral-600 hover:text-burrito-brown' 
                               : 'text-white/80 hover:text-white'),
-                        'px-3 py-2 text-sm font-medium transition-colors duration-200'
+                        'px-2 lg:px-3 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap'
                       )}
                       aria-current={item.current ? 'page' : undefined}
                     >
@@ -220,7 +220,7 @@ const ModernNavbar = () => {
                 </div>
               </div>
               
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 <button 
                   className={`hidden sm:flex items-center justify-center p-2 rounded-full ${scrolled ? 'text-burrito-brown hover:bg-burrito-beige' : 'text-white hover:bg-white/10'}`}
                   aria-label="Search"
@@ -230,7 +230,7 @@ const ModernNavbar = () => {
                 
                 <button 
                   onClick={toggleTheme} 
-                  className={styles.themeToggle}
+                  className={`hidden sm:flex ${styles.themeToggle}`}
                   aria-label={isDarkMode ? t('nav.switchToLightMode') : t('nav.switchToDarkMode')}
                 >
                   {isDarkMode ? (
@@ -241,6 +241,7 @@ const ModernNavbar = () => {
                 </button>
                 
                 <LanguageSwitcher 
+                  className="hidden sm:block"
                   buttonClassName={styles.languageSwitcherClass}
                 />
                 
@@ -253,7 +254,7 @@ const ModernNavbar = () => {
                           : 'focus:ring-burrito-brown focus:ring-offset-2'
                       }`}>
                         <span className="sr-only">Open user menu</span>
-                        <div className={`h-9 w-9 rounded-full ${
+                        <div className={`h-8 w-8 sm:h-9 sm:w-9 rounded-full ${
                           isDarkMode 
                             ? 'bg-burrito-burgundy' 
                             : 'bg-burrito-brown'
@@ -328,7 +329,7 @@ const ModernNavbar = () => {
                     </Transition>
                   </Menu>
                 ) : (
-                  <div className="flex items-center gap-3">
+                  <div className="hidden sm:flex items-center gap-3">
                     <Link
                       to="/login"
                       className={styles.loginLink}
@@ -349,39 +350,84 @@ const ModernNavbar = () => {
 
           <Disclosure.Panel className={styles.mobileMenu}>
             <div className="space-y-1 px-2 pb-3 pt-2">
-              {navigation.map((item) => (
-                <Disclosure.Button
-                  key={item.name}
-                  as={Link}
-                  to={item.href}
-                  className={classNames(
-                    item.current
-                      ? isDarkMode
-                        ? 'bg-burrito-burgundy text-burrito-beige'
-                        : 'bg-burrito-beige text-burrito-brown'
-                      : isDarkMode
-                        ? 'text-burrito-gray hover:bg-burrito-burgundy hover:text-burrito-beige'
-                        : 'text-neutral-600 hover:bg-burrito-beige hover:text-burrito-brown',
-                    'block rounded-md px-3 py-2 text-base font-medium'
-                  )}
-                  aria-current={item.current ? 'page' : undefined}
-                >
-                  {item.name}
-                </Disclosure.Button>
-              ))}
-              <div className="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4 flex items-center justify-around">
+              {/* Search bar in mobile view */}
+              <div className="mb-3 px-2">
+                <div className={`flex items-center rounded-md ${isDarkMode ? 'bg-burrito-charcoal/50' : 'bg-gray-100'} p-2`}>
+                  <MagnifyingGlassIcon className="h-5 w-5 mr-2 text-gray-500" />
+                  <input
+                    type="search"
+                    placeholder={t('nav.search')}
+                    className={`w-full bg-transparent border-none focus:ring-0 text-sm ${
+                      isDarkMode ? 'text-burrito-beige placeholder:text-gray-500' : 'text-gray-700 placeholder:text-gray-500'
+                    }`}
+                  />
+                </div>
+              </div>
+              
+              {/* Navigation links in mobile view */}
+              <div className="mb-3 border-b border-gray-200 dark:border-gray-700 pb-3">
+                {navigation.map((item) => (
+                  <DisclosureButton
+                    key={item.name}
+                    as={Link}
+                    to={item.href}
+                    className={classNames(
+                      item.current
+                        ? isDarkMode
+                          ? 'bg-burrito-burgundy text-burrito-beige'
+                          : 'bg-burrito-beige text-burrito-brown'
+                        : isDarkMode
+                          ? 'text-burrito-gray hover:bg-burrito-burgundy hover:text-burrito-beige'
+                          : 'text-neutral-600 hover:bg-burrito-beige hover:text-burrito-brown',
+                      'block rounded-md px-3 py-3 text-base font-medium w-full text-left mb-1'
+                    )}
+                    aria-current={item.current ? 'page' : undefined}
+                  >
+                    {item.name}
+                  </DisclosureButton>
+                ))}
+              </div>
+              
+              {/* Theme and language controls */}
+              <div className="grid grid-cols-2 gap-3 mb-3">
                 <button 
                   onClick={toggleTheme} 
-                  className={styles.mobileThemeToggle}
+                  className={styles.mobileThemeToggle + " flex items-center justify-center w-full"}
                 >
                   {isDarkMode ? <SunIcon className="h-5 w-5 mr-2" /> : <MoonIcon className="h-5 w-5 mr-2" />}
                   {isDarkMode ? t('nav.lightMode') : t('nav.darkMode')}
                 </button>
+                
                 <LanguageSwitcher 
-                  buttonClassName={styles.mobileLangSwitcher}
+                  className="w-full"
+                  buttonClassName={styles.mobileLangSwitcher + " justify-center w-full"}
                   dropdownClassName="w-full" 
                 />
               </div>
+              
+              {/* User authentication options */}
+              {!isAuthenticated && (
+                <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <DisclosureButton
+                    as={Link}
+                    to="/login"
+                    className={`block text-center w-full py-2 rounded-md ${
+                      isDarkMode 
+                        ? 'bg-burrito-burgundy/20 text-burrito-cheese' 
+                        : 'bg-burrito-beige text-burrito-brown'
+                    }`}
+                  >
+                    {t('nav.login')}
+                  </DisclosureButton>
+                  <DisclosureButton
+                    as={Link}
+                    to="/register"
+                    className="btn btn-primary py-3 px-4 text-sm w-full text-center"
+                  >
+                    {t('nav.register')}
+                  </DisclosureButton>
+                </div>
+              )}
             </div>
           </Disclosure.Panel>
         </>

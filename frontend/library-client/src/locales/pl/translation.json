@@ -96,7 +96,7 @@
     "readingJourney": "Gotowy, aby rozpocząć swoją przygodę z czytaniem?",
     "joinDescription": "Dołącz do naszej biblioteki już dziś i uzyskaj dostęp do tysięcy książek, spersonalizowanych rekomendacji i tętniącej życiem społeczności czytelników.",
     "digitalAccess": "Dostęp cyfrowy",
-    "genresCount": "Gatunki"
+    "genreCategories": "Gatunki"
   },
   "books": {
     "title": "Kolekcja biblioteki",
@@ -148,6 +148,7 @@
     "newUser": "Nowy użytkownik?",
     "createAccount": "Utwórz konto",
     "loginButton": "Zaloguj się",
+    "signingIn": "Logowanie...",
     "invalidCredentials": "Nieprawidłowy e-mail lub hasło. Spróbuj ponownie."
   },
   "register": {

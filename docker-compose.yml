@@ -27,6 +27,11 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=library_db;Username=admin;Password=admin
       - PORT=8001
+      - AllowedOrigins=*
+      - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+      - ASPNETCORE_FORWARDEDHEADERS_KNOWNNETWORKS=
+      - ASPNETCORE_FORWARDEDHEADERS_KNOWNPROXIES=
+      - ASPNETCORE_HTTPS_PORT=443
     volumes:
       - book_covers:/app/wwwroot/uploads/covers
     networks:
