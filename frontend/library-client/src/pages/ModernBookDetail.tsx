@@ -20,6 +20,17 @@ const ModernBookDetail = () => {
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Set a default page title
+  usePageTitle('books.details');
+  
+  // Update document title directly when book changes
+  useEffect(() => {
+    if (book?.title) {
+      document.title = `${book.title} - ${t('app.title')}`;
+    }
+  }, [book, t]);
+
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -33,12 +44,22 @@ const ModernBookDetail = () => {
       if (!id) return;
       
       try {
+        console.log('Fetching book details for id:', id);
         const data = await bookService.getBookById(parseInt(id, 10));
+        console.log('Received book data:', data);
         setBook(data);
-        // Set page title with book title
-        usePageTitle(data.title);
-      } catch (err) {
-        setError(t('errors.serverError'));
+      } catch (err: any) {
+        console.error('Error fetching book details:', {
+          error: err,
+          status: err.response?.status,
+          data: err.response?.data,
+          message: err.message
+        });
+        if (err.response?.status === 404) {
+          setError(t('books.notFound'));
+        } else {
+          setError(t('errors.serverError'));
+        }
       } finally {
         setLoading(false);
       }
@@ -70,7 +91,7 @@ const ModernBookDetail = () => {
     } catch (err: any) {
       console.error('Error in handleCheckout:', err);
       // Provide more detailed error information to the user
-      const errorMessage = err.response?.data || 'Failed to check out the book. Please try again.';
+      const errorMessage = err.response?.data || t('bookDetail.checkoutError');
       setCheckoutError(errorMessage);
     } finally {
       setCheckoutLoading(false);
@@ -83,7 +104,7 @@ const ModernBookDetail = () => {
       return (
         <div className="mt-2">
           <Link to="/login" className="btn btn-primary">
-            Sign in to check out
+            {t('bookDetail.signInToCheckOut', 'Sign in to check out')}
           </Link>
         </div>
       );
@@ -99,47 +120,57 @@ const ModernBookDetail = () => {
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium">{t('common.success')}!</h3>
-              <p className="mt-1 text-sm">{t('bookDetail.checkoutSuccess')}</p>
-              <div className="mt-2">
-                <Link to="/my-books" className="text-sm font-medium text-green-800 underline">
-                  {t('myBooks.title')}
-                </Link>
-              </div>
+              <p className="text-sm font-medium">{t('bookDetail.checkoutSuccess')}</p>
             </div>
           </div>
         </div>
       );
     }
     
-    if (book?.availableCopies === 0) {
+    if (checkoutError) {
       return (
-        <button 
-          disabled
-          className="btn bg-neutral-200 text-neutral-500 cursor-not-allowed mt-2"
-        >
-          {t('books.unavailable')}
-        </button>
+        <div className="mt-4 bg-red-50 text-red-800 rounded-lg p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium">{checkoutError}</p>
+            </div>
+          </div>
+          <button 
+            onClick={handleCheckoutButtonClick} 
+            className="mt-3 text-sm font-medium text-red-700 underline"
+          >
+            {t('common.tryAgain', 'Try Again')}
+          </button>
+        </div>
       );
     }
     
+    const isBookAvailable = book && book.availableCopies > 0;
+    
     return (
       <div className="mt-2">
-        <button 
+        <button
           onClick={handleCheckoutButtonClick}
-          disabled={checkoutLoading}
-          className="btn btn-primary"
+          disabled={!isBookAvailable || checkoutLoading}
+          className={`btn ${isBookAvailable ? 'btn-primary' : 'btn-disabled'} w-full md:w-auto`}
         >
           {checkoutLoading ? (
-            <div className="flex items-center">
+            <span className="flex items-center justify-center">
               <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
               {t('common.loading')}
-            </div>
-          ) : (
+            </span>
+          ) : isBookAvailable ? (
             t('books.checkout')
+          ) : (
+            t('books.unavailable')
           )}
         </button>
       </div>
@@ -148,12 +179,14 @@ const ModernBookDetail = () => {
   
   if (loading) {
     return (
-      <div className="min-h-screen pt-24 pb-12 flex justify-center items-start">
-        <div className="animate-spin h-8 w-8 text-primary-600">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
+      <div className="auto-theme-bg min-h-screen pt-24 pb-16">
+        <div className="container-custom">
+          <div className="flex justify-center py-12">
+            <svg className="animate-spin h-8 w-8 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
         </div>
       </div>
     );
@@ -161,179 +194,154 @@ const ModernBookDetail = () => {
   
   if (error || !book) {
     return (
-      <div className="min-h-screen pt-24 pb-12 flex justify-center">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-soft p-8 text-center">
-          <h2 className="text-2xl font-heading font-bold text-neutral-900 mb-4">
-            {t('books.noBooks')}
-          </h2>
-          <p className="text-neutral-600 mb-6">
-            {error || t('errors.serverError')}
-          </p>
-          <button 
-            onClick={() => navigate('/books')}
-            className="btn btn-primary"
-          >
-            {t('common.back')}
-          </button>
+      <div className="auto-theme-bg min-h-screen pt-24 pb-16">
+        <div className="container-custom">
+          <div className="bg-red-50 rounded-lg p-6 text-red-700 max-w-xl mx-auto">
+            <h1 className="text-xl font-semibold mb-3">{t('common.error')}</h1>
+            <p className="mb-4">{error || t('errors.serverError')}</p>
+            <div className="flex space-x-4">
+              <button 
+                onClick={() => navigate(-1)} 
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                <ArrowLeftIcon className="h-4 w-4 mr-1.5" />
+                {t('common.back')}
+              </button>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              >
+                {t('common.tryAgain', 'Try Again')}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
   
   return (
-    <div className="min-h-screen auto-theme-bg pt-24 pb-16">
+    <div className="auto-theme-bg min-h-screen pt-24 pb-16">
       <div className="container-custom">
         <div className="mb-6">
           <button 
-            onClick={() => navigate(-1)}
-            className="inline-flex items-center text-neutral-600 hover:text-primary-600 transition-colors"
+            onClick={() => navigate(-1)} 
+            className="inline-flex items-center auto-theme-text hover:text-primary-600 transition-colors"
           >
-            <ArrowLeftIcon className="h-4 w-4 mr-1" />
+            <ArrowLeftIcon className="h-5 w-5 mr-1" />
             {t('common.back')}
           </button>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Book cover/image column */}
-          <div className="lg:col-span-1">
-            <div className="bg-gradient-to-br from-primary-600 to-primary-400 aspect-[2/3] rounded-xl shadow-soft overflow-hidden flex items-center justify-center p-2">
-              {book.coverImagePath ? (
-                <img 
-                  src={bookService.getBookCover(book.id)} 
-                  alt={`Cover of ${book.title}`}
-                  className="w-full h-full object-cover"
+        <div className="card p-6 md:p-8">
+          <div className="flex flex-col md:flex-row">
+            {/* Book cover image */}
+            <div className="md:w-1/3 flex justify-center md:justify-start mb-6 md:mb-0">
+              <div className="relative w-48 h-72 md:w-56 md:h-80 overflow-hidden rounded-lg shadow-md">
+                <img
+                  src={bookService.getBookCover(book.id)}
+                  alt={`${book.title} ${t('common.cover')}`}
+                  className="object-cover w-full h-full"
                   onError={(e) => {
-                    // Fallback to the placeholder on error
+                    // Prevent infinite loop by clearing error handler
                     const target = e.target as HTMLImageElement;
-                    target.onerror = null; // Prevent infinite error loop
-                    target.src = '/assets/placeholder-cover.svg';
+                    target.onerror = null;
+                    // Try placeholder
+                    target.src = '/assets/book-placeholder.jpg';
+                    target.onerror = () => {
+                      // If placeholder also fails, show fallback gradient
+                      target.style.display = 'none';
+                      (target.parentNode as HTMLElement).innerHTML = `
+                        <div class="flex items-center justify-center w-full h-full bg-gradient-to-br from-primary-600 to-primary-400 p-6">
+                          <div class="text-center text-white">
+                            <h3 class="text-xl font-semibold mb-2">${book.title}</h3>
+                            <p class="opacity-80">${book.author}</p>
+                          </div>
+                        </div>
+                      `;
+                    };
                   }}
                 />
-              ) : (
-                <div className="text-center text-white p-6">
-                  <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="h-16 w-16 mx-auto mb-4 opacity-90 rounded-full object-cover" />
-                  <h2 className="text-2xl font-bold mb-2">{book.title}</h2>
-                  <p className="opacity-80">{t('books.author')}: {book.author}</p>
-                </div>
-              )}
+              </div>
             </div>
             
-            <div className="mt-6">
-              <div className="card p-6">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4">{t('books.availability')}</h3>
-                
-                <div className="flex justify-between mb-2">
-                  <span className="text-neutral-600">{t('admin.manageCheckouts.status')}:</span>
-                  <span className={`font-medium ${book.availableCopies > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {book.availableCopies > 0 ? t('books.available') : t('books.unavailable')}
+            {/* Book details */}
+            <div className="md:w-2/3 md:pl-8">
+              <span className="text-sm uppercase tracking-wide text-neutral-500 font-medium">
+                {book.genre}
+              </span>
+              <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 dark:text-burrito-beige mt-1 mb-2">
+                {book.title}
+              </h1>
+              <p className="text-lg auto-theme-text-secondary mb-4">
+                {t('books.by')} {book.author}
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4 mb-6">
+                <div className="flex items-center">
+                  <BuildingLibraryIcon className="h-5 w-5 auto-theme-text-secondary mr-2" />
+                  <span className="text-sm auto-theme-text-secondary">
+                    <strong>{t('books.publisher')}:</strong> {book.publisher}
                   </span>
                 </div>
-                
-                <div className="flex justify-between mb-4">
-                  <span className="text-neutral-600">{t('books.copies')}:</span>
-                  <span className="font-medium text-neutral-900">{book.availableCopies} of {book.totalCopies}</span>
+                <div className="flex items-center">
+                  <CalendarIcon className="h-5 w-5 auto-theme-text-secondary mr-2" />
+                  <span className="text-sm auto-theme-text-secondary">
+                    <strong>{t('books.publishedYear')}:</strong> {book.publishedYear}
+                  </span>
                 </div>
-                
-                {checkoutError && (
-                  <div className="mb-4 bg-red-50 text-red-800 p-3 rounded-lg text-sm">
-                    {checkoutError}
-                  </div>
-                )}
-                
-                {renderCheckoutButton()}
               </div>
+              
+              <div className="mb-6">
+                <div className="flex items-center mb-2">
+                  <span className="mr-2 auto-theme-text-secondary">{t('books.availability')}:</span>
+                  {book.availableCopies > 0 ? (
+                    <span className="inline-flex items-center text-sm font-medium text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
+                      <svg className="h-2 w-2 fill-current text-green-500 mr-1.5" viewBox="0 0 8 8">
+                        <circle cx="4" cy="4" r="3" />
+                      </svg>
+                      {t('books.available')}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center text-sm font-medium text-red-700 bg-red-100 px-2 py-0.5 rounded-full">
+                      <svg className="h-2 w-2 fill-current text-red-500 mr-1.5" viewBox="0 0 8 8">
+                        <circle cx="4" cy="4" r="3" />
+                      </svg>
+                      {t('books.unavailable')}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm auto-theme-text-secondary">
+                  <strong>{t('books.copies')}:</strong> {book.availableCopies} / {book.totalCopies}
+                </p>
+                <p className="text-sm auto-theme-text-secondary">
+                  <strong>{t('books.catalogNumber')}:</strong> {book.catalogNumber || 'N/A'}
+                </p>
+              </div>
+              
+              {/* Checkout button */}
+              {renderCheckoutButton()}
             </div>
           </div>
           
-          {/* Book details column */}
-          <div className="lg:col-span-2">
-            <div className="card p-6 sm:p-8">
-              <h1 className="text-3xl font-heading font-bold text-neutral-900 mb-2">{book.title}</h1>
-              <p className="text-xl text-neutral-600 mb-6">{t('books.author')}: {book.author}</p>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-                    <CalendarIcon className="h-5 w-5 text-primary-600" />
-                  </div>
-                  <div>
-                    <div className="text-sm text-neutral-500">{t('books.publishedYear')}</div>
-                    <div className="font-medium">{book.publishedYear}</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-                    <BuildingLibraryIcon className="h-5 w-5 text-primary-600" />
-                  </div>
-                  <div>
-                    <div className="text-sm text-neutral-500">{t('books.publisher')}</div>
-                    <div className="font-medium">{book.publisher}</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 text-primary-600">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="text-sm text-neutral-500">{t('books.genre')}</div>
-                    <div className="font-medium">{book.genre.replace(/([A-Z])/g, ' $1').trim()}</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 text-primary-600">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="text-sm text-neutral-500">{t('books.catalogNumber')}</div>
-                    <div className="font-medium">{book.catalogNumber}</div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Placeholder for book description since it's not in the type */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-3">Description</h3>
-                <p className="text-neutral-600 leading-relaxed">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius faucibus massa sollicitudin amet augue. Nibh metus a semper purus mauris duis. Lorem eu neque, tristique quis duis. Nibh scelerisque ac adipiscing velit non nulla in amet pellentesque.
-                </p>
-                <p className="text-neutral-600 leading-relaxed mt-4">
-                  Sit bibendum donec dolor fames neque vulputate non sit aliquam. Consequat turpis natoque leo, massa nibh. Neque ultrices odio amet consequat.
-                </p>
-              </div>
-              
-              {/* Related books (placeholder) */}
-              <div>
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4">You might also like</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="bg-neutral-50 rounded-lg p-4 hover:bg-neutral-100 transition-colors">
-                      <h4 className="font-medium text-neutral-900 mb-1">Similar Book Title {i}</h4>
-                      <p className="text-sm text-neutral-600 mb-2">Author Name</p>
-                      <Link to={`/books/${i}`} className="text-xs font-medium text-primary-600">
-                        View details
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          {/* Book description section */}
+          <div className="mt-8 border-t border-neutral-200 pt-6">
+            <h2 className="text-xl font-semibold text-neutral-900 dark:text-burrito-beige mb-4">
+              {t('bookDetail.about', 'About this book')}
+            </h2>
+            <div className="prose max-w-none auto-theme-text">
+              <p>{t('bookDetail.noDescription', 'No description available for this book.')}</p>
             </div>
           </div>
         </div>
       </div>
-      {/* Checkout Modal */}
+      
+      {/* Checkout modal */}
       <CheckOutModal
         isOpen={isCheckoutModalOpen}
         onClose={() => setIsCheckoutModalOpen(false)}
         onConfirm={handleCheckout}
-        bookTitle={book?.title || ''}
+        bookTitle={book.title}
       />
     </div>
   );

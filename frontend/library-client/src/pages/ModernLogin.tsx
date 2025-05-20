@@ -83,10 +83,10 @@ const ModernLogin = () => {
             <span>Universidad de WSBurrito</span>
           </Link>
           <h2 className="text-3xl font-heading font-bold text-neutral-900 dark:text-burrito-beige">
-            Welcome back
+            {t('login.welcome')}
           </h2>
           <p className="mt-2 auto-theme-text">
-            Sign in to access your account
+            {t('login.subtitle')}
           </p>
         </div>
       </div>
@@ -187,7 +187,7 @@ const ModernLogin = () => {
                 <div className="w-full border-t border-neutral-200"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-neutral-500">Or</span>
+                <span className="px-4 bg-white text-neutral-500">{t('auth.or')}</span>
               </div>
             </div>
 

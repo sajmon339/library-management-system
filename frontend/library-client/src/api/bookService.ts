@@ -28,8 +28,15 @@ const filterBooks = async (
 };
 
 const getBookById = async (id: number) => {
-  const response = await api.get<Book>(`/books/${id}`);
-  return response.data;
+  try {
+    console.log('bookService: Fetching book with id:', id);
+    const response = await api.get<Book>(`/books/${id}`);
+    console.log('bookService: Received response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('bookService: Error fetching book:', error);
+    throw error; // Re-throw to allow component-level error handling
+  }
 };
 
 const getBookByCatalogNumber = async (catalogNumber: string) => {

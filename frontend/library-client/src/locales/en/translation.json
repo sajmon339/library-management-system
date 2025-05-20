@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "Library Management System"
+    "title": "Universidad de WSBurrito"
   },
   "common": {
     "loading": "Loading...",
@@ -34,7 +34,8 @@
     "failedToLoad": "Failed to load data. Please try again later.",
     "areYouSure": "Are you sure?",
     "cover": "Cover",
-    "tip": "TIP"
+    "tip": "TIP",
+    "tryAgain": "Try Again"
   },
   "nav": {
     "home": "Home",
@@ -65,6 +66,24 @@
     "heroImageAlt": "Modern Library",
     "browseCollection": "Browse Collection",
     "joinLibrary": "Join Library",
+    "browseByGenre": "Browse by Genre",
+    "exploreCollection": "Explore our vast collection by your favorite categories",
+    "librariansPicks": "Our librarians' top picks this month",
+    "seeAllGenres": "See all genres",
+    "everythingInOnePlace": "Everything You Need in One Place",
+    "systemDescription": "Our library management system provides powerful tools for both readers and librarians",
+    "extensiveCatalog": "Extensive Catalog",
+    "catalogDescription": "Browse through thousands of books with detailed information including summaries, author bios, and availability.",
+    "exploreCatalog": "Explore catalog",
+    "easyCheckout": "Easy Check-out Process",
+    "checkoutDescription": "Check out books with a streamlined process, manage your lending periods, and receive due date reminders.",
+    "signUpNow": "Sign up now",
+    "adminManagement": "Admin Management",
+    "adminDescription": "Powerful tools for librarians to manage inventory, track checkouts, add new books, and analyze library usage.",
+    "readingJourney": "Ready to Start Your Reading Journey?",
+    "joinDescription": "Join our library today and get access to thousands of books, personalized recommendations, and a vibrant community of fellow readers.",
+    "digitalAccess": "Digital Access",
+    "genres": "Genres",
     "quickStats": {
       "title": "Library at a Glance",
       "totalBooks": "Total Books",
@@ -101,17 +120,23 @@
     "left": "left",
     "catalogNumber": "Catalog number",
     "returned": "Returned",
-    "availability": "Availability"
+    "availability": "Availability",
+    "by": "by"
   },
   "bookDetail": {
     "checkoutTitle": "Check Out Book",
     "checkoutMessage": "Are you sure you want to check out",
     "daysToReturn": "Days until return",
     "checkoutSuccess": "Book checked out successfully",
-    "checkoutError": "Failed to check out book"
+    "checkoutError": "Failed to check out book",
+    "about": "About this book",
+    "noDescription": "No description available for this book.",
+    "signInToCheckOut": "Sign in to check out"
   },
   "login": {
     "title": "Log In to Your Account",
+    "welcome": "Welcome back",
+    "subtitle": "Sign in to access your account",
     "email": "Email Address",
     "password": "Password",
     "forgotPassword": "Forgot password?",
@@ -174,11 +199,16 @@
     "currentlyBorrowed": "Currently Borrowed",
     "readingHistory": "Reading History",
     "noBooksMessage": "You haven't borrowed any books yet",
-    "noHistoryMessage": "Your reading history is empty"
+    "noHistoryMessage": "Your reading history is empty",
+    "noBooksTitle": "No books checked out",
+    "noBooksDescription": "You haven't checked out any books yet. Browse our collection and find your next great read!",
+    "browseBooks": "Browse Books",
+    "manageBooks": "Manage your checked out books and view your borrowing history"
   },
   "admin": {
     "dashboard": {
       "title": "Admin Dashboard",
+      "subtitle": "Manage your library system and monitor key metrics",
       "quickStats": "Quick Stats",
       "totalBooks": "Total Books",
       "availableBooks": "Available Books",
@@ -186,7 +216,18 @@
       "activeCheckouts": "Active Checkouts",
       "overdueCheckouts": "Overdue Checkouts",
       "returnsToday": "Returns Today",
-      "recentActivity": "Recent Activity"
+      "recentActivity": "Recent Activity",
+      "systemOverview": "System Overview",
+      "members": "Members",
+      "activeMembers": "Active library members",
+      "activeLoans": "Active Loans",
+      "noOverdueItems": "No overdue items",
+      "checkoutsOverTime": "Checkouts Over Time",
+      "chartPlaceholder": "Interactive chart will appear here",
+      "chartDescription": "Showing checkout trends over time",
+      "quickActions": "Quick Actions",
+      "addBookDescription": "Add a new book to the library catalog",
+      "createUserDescription": "Create a new user account"
     },
     "manageBooks": {
       "title": "Manage Books",
@@ -308,5 +349,11 @@
     "english": "English",
     "polish": "Polish",
     "select": "Select language"
+  },
+  "auth": {
+    "signUpFree": "Sign Up for Free", 
+    "alreadyMember": "Already a Member? Log In",
+    "browseCollection": "Browse Collection",
+    "or": "Or"
   }
 }

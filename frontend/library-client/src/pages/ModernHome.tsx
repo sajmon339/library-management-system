@@ -5,12 +5,16 @@ import { ClockIcon, UserGroupIcon, AcademicCapIcon } from '@heroicons/react/24/o
 import { bookService } from '../api/bookService.js';
 import { Book } from '../types/book.js';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../utils/usePageTitle.js';
 
 const ModernHome = () => {
   const { isAuthenticated, isAdmin } = useAuth();
   const { t } = useTranslation();
   const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Set page title
+  usePageTitle('app.title');
 
   // Fetch featured books (first 4 books from the API)
   useEffect(() => {
@@ -104,7 +108,7 @@ const ModernHome = () => {
               <ClockIcon className="w-12 h-12 text-primary-600 mr-4" />
               <div>
                 <div className="text-3xl font-bold text-neutral-900">24/7</div>
-                <div className="text-neutral-600">Digital Access</div>
+                <div className="text-neutral-600">{t('home.digitalAccess')}</div>
               </div>
             </div>
             
@@ -112,7 +116,7 @@ const ModernHome = () => {
               <AcademicCapIcon className="w-12 h-12 text-primary-600 mr-4" />
               <div>
                 <div className="text-3xl font-bold text-neutral-900">50+</div>
-                <div className="text-neutral-600">Genres</div>
+                <div className="text-neutral-600">{t('home.genresCount')}</div>
               </div>
             </div>
           </div>
@@ -124,11 +128,11 @@ const ModernHome = () => {
         <div className="container-custom">
           <div className="flex justify-between items-end mb-10">
             <div>
-              <h2 className="text-3xl font-heading font-bold text-neutral-900 mb-2">Browse by Genre</h2>
-              <p className="text-neutral-600 max-w-2xl">Explore our vast collection by your favorite categories</p>
+              <h2 className="text-3xl font-heading font-bold text-neutral-900 mb-2">{t('home.browseByGenre')}</h2>
+              <p className="text-neutral-600 max-w-2xl">{t('home.exploreCollection')}</p>
             </div>
             <Link to="/books" className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center">
-              See all genres
+              {t('home.seeAllGenres')}
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-1">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
@@ -154,11 +158,11 @@ const ModernHome = () => {
         <div className="container-custom">
           <div className="flex justify-between items-end mb-10">
             <div>
-              <h2 className="text-3xl font-heading font-bold text-neutral-900 mb-2">Featured Books</h2>
-              <p className="text-neutral-600 max-w-2xl">Our librarians' top picks this month</p>
+              <h2 className="text-3xl font-heading font-bold text-neutral-900 mb-2">{t('home.featuredBooks')}</h2>
+              <p className="text-neutral-600 max-w-2xl">{t('home.librariansPicks')}</p>
             </div>
             <Link to="/books" className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center">
-              View all books
+              {t('home.viewAll')}
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-1">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
@@ -212,7 +216,7 @@ const ModernHome = () => {
                         <div className="flex items-center justify-center h-full w-full bg-gradient-to-br from-primary-600 to-primary-400 p-6">
                           <div className="text-center text-white">
                             <h3 className="text-xl font-semibold mb-2">{book.title}</h3>
-                            <p className="opacity-80">by {book.author}</p>
+                            <p className="opacity-80">{t('books.by')} {book.author}</p>
                           </div>
                         </div>
                       )}
@@ -222,7 +226,7 @@ const ModernHome = () => {
                         {book.genre.replace(/([A-Z])/g, ' $1').trim()}
                       </div>
                       <h3 className="text-lg font-semibold text-neutral-900 mb-1 group-hover:text-primary-600 transition-colors">{book.title}</h3>
-                      <p className="text-neutral-600 text-sm">by {book.author}</p>
+                      <p className="text-neutral-600 text-sm">{t('books.by')} {book.author}</p>
                     </div>
                   </div>
                 </Link>
@@ -236,9 +240,9 @@ const ModernHome = () => {
       <section className="py-16 bg-neutral-50">
         <div className="container-custom">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl font-heading font-bold text-neutral-900 mb-4">Everything You Need in One Place</h2>
+            <h2 className="text-3xl font-heading font-bold text-neutral-900 mb-4">{t('home.everythingInOnePlace')}</h2>
             <p className="text-neutral-600 text-lg">
-              Our library management system provides powerful tools for both readers and librarians
+              {t('home.systemDescription')}
             </p>
           </div>
           
@@ -250,13 +254,13 @@ const ModernHome = () => {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                Extensive Catalog
+                {t('home.extensiveCatalog')}
               </h3>
               <p className="text-neutral-600 mb-4">
-                Browse through thousands of books with detailed information including summaries, author bios, and availability.
+                {t('home.catalogDescription')}
               </p>
               <Link to="/books" className="text-primary-600 font-medium text-sm inline-flex items-center hover:text-primary-700">
-                Explore catalog
+                {t('home.exploreCatalog')}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-1">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                 </svg>
@@ -270,10 +274,10 @@ const ModernHome = () => {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                Easy Check-out Process
+                {t('home.easyCheckout')}
               </h3>
               <p className="text-neutral-600 mb-4">
-                Check out books with a streamlined process, manage your lending periods, and receive due date reminders.
+                {t('home.checkoutDescription')}
               </p>
               {isAuthenticated ? (
                 <Link to="/my-books" className="text-primary-600 font-medium text-sm inline-flex items-center hover:text-primary-700">
@@ -284,7 +288,7 @@ const ModernHome = () => {
                 </Link>
               ) : (
                 <Link to="/register" className="text-primary-600 font-medium text-sm inline-flex items-center hover:text-primary-700">
-                  Sign up now
+                  {t('home.signUpNow')}
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-1">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                   </svg>
@@ -299,10 +303,10 @@ const ModernHome = () => {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                Admin Management
+                {t('home.adminManagement')}
               </h3>
               <p className="text-neutral-600 mb-4">
-                Powerful tools for librarians to manage inventory, track checkouts, add new books, and analyze library usage.
+                {t('home.adminDescription')}
               </p>
               {isAdmin && (
                 <Link to="/admin" className="text-primary-600 font-medium text-sm inline-flex items-center hover:text-primary-700">
@@ -329,24 +333,24 @@ const ModernHome = () => {
         <div className="container-custom relative z-20">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-4">
-              Ready to Start Your Reading Journey?
+              {t('home.readingJourney')}
             </h2>
             <p className="text-white/80 text-lg mb-8">
-              Join our library today and get access to thousands of books, personalized recommendations, and a vibrant community of fellow readers.
+              {t('home.joinDescription')}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 to={isAuthenticated ? "/books" : "/register"}
                 className="btn bg-white hover:bg-neutral-100 text-primary-700 px-8 py-3 text-base"
               >
-                {isAuthenticated ? "Browse Collection" : "Sign Up for Free"}
+                {isAuthenticated ? t('auth.browseCollection') : t('auth.signUpFree')}
               </Link>
               {!isAuthenticated && (
                 <Link
                   to="/login"
                   className="btn border border-white/20 text-white hover:bg-white/10 px-8 py-3 text-base"
                 >
-                  Already a Member? Log In
+                  {t('auth.alreadyMember')}
                 </Link>
               )}
             </div>

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { bookService } from '../api/bookService.js';
 import { userService } from '../api/userService.js';
 import { checkOutService } from '../api/checkOutService.js';
+import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../utils/usePageTitle.js';
 import { 
   UserGroupIcon, 
   ClockIcon, 
@@ -15,6 +17,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const ModernAdminDashboard = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState({
     totalBooks: 0,
     availableBooks: 0,
@@ -25,6 +28,9 @@ const ModernAdminDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Set the page title
+  usePageTitle(t('admin.dashboard.title'));
   
   // Dashboard statistics
   useEffect(() => {
@@ -57,13 +63,13 @@ const ModernAdminDashboard = () => {
         
         setLoading(false);
       } catch (err) {
-        setError('Failed to load dashboard statistics.');
+        setError(t('common.failedToLoad'));
         setLoading(false);
       }
     };
     
     fetchStats();
-  }, []);
+  }, [t]);
   
   // Sample activity data for charts
   const recentActivity = [
@@ -80,10 +86,10 @@ const ModernAdminDashboard = () => {
       <div className="container-custom">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 dark:text-burrito-beige mb-2">
-            Admin Dashboard
+            {t('admin.dashboard.title')}
           </h1>
           <p className="auto-theme-text">
-            Manage your library system and monitor key metrics
+            {t('admin.dashboard.subtitle', 'Manage your library system and monitor key metrics')}
           </p>
         </div>
         
@@ -104,7 +110,7 @@ const ModernAdminDashboard = () => {
               onClick={() => window.location.reload()}
               className="mt-3 text-sm font-medium text-red-700 underline"
             >
-              Try Again
+              {t('common.tryAgain', 'Try Again')}
             </button>
           </div>
         ) : (
@@ -117,16 +123,16 @@ const ModernAdminDashboard = () => {
                     <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="h-7 w-7 rounded-full object-cover" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-500">Books</h3>
+                    <h3 className="text-sm font-medium text-neutral-500">{t('books.title')}</h3>
                     <div className="text-3xl font-bold text-neutral-900 mb-1">{stats.totalBooks}</div>
                     <div className="text-sm text-neutral-600">
-                      {stats.availableBooks} available for checkout
+                      {stats.availableBooks} {t('admin.dashboard.availableBooks').toLowerCase()}
                     </div>
                   </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-neutral-100">
                   <Link to="/admin/books" className="text-sm font-medium text-primary-600 hover:text-primary-700 inline-flex items-center">
-                    Manage Books
+                    {t('nav.manageBooks')}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-1">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                     </svg>
@@ -140,16 +146,16 @@ const ModernAdminDashboard = () => {
                     <UserGroupIcon className="h-7 w-7 text-accent-600" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-500">Members</h3>
+                    <h3 className="text-sm font-medium text-neutral-500">{t('admin.dashboard.totalUsers')}</h3>
                     <div className="text-3xl font-bold text-neutral-900 mb-1">{stats.totalUsers}</div>
                     <div className="text-sm text-neutral-600">
-                      Active library members
+                      {t('admin.dashboard.activeMembers', 'Active library members')}
                     </div>
                   </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-neutral-100">
                   <Link to="/admin/users" className="text-sm font-medium text-primary-600 hover:text-primary-700 inline-flex items-center">
-                    Manage Users
+                    {t('nav.manageUsers')}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-1">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                     </svg>
@@ -163,20 +169,20 @@ const ModernAdminDashboard = () => {
                     <ClockIcon className="h-7 w-7 text-green-600" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-500">Checkouts</h3>
+                    <h3 className="text-sm font-medium text-neutral-500">{t('nav.checkouts')}</h3>
                     <div className="text-3xl font-bold text-neutral-900 mb-1">{stats.activeCheckouts}</div>
                     <div className="text-sm text-neutral-600">
                       {stats.overdueCheckouts > 0 ? (
-                        <span className="text-red-600 font-medium">{stats.overdueCheckouts} overdue</span>
+                        <span className="text-red-600 font-medium">{stats.overdueCheckouts} {t('common.overdue').toLowerCase()}</span>
                       ) : (
-                        <span>No overdue items</span>
+                        <span>{t('admin.dashboard.noOverdueItems', 'No overdue items')}</span>
                       )}
                     </div>
                   </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-neutral-100">
                   <Link to="/admin/checkouts" className="text-sm font-medium text-primary-600 hover:text-primary-700 inline-flex items-center">
-                    Manage Checkouts
+                    {t('admin.manageCheckouts.title')}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-1">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                     </svg>
@@ -190,7 +196,7 @@ const ModernAdminDashboard = () => {
               <div className="lg:col-span-2">
                 <div className="card p-6 md:p-8 mb-8">
                   <h2 className="text-xl font-semibold text-neutral-900 mb-6">
-                    System Overview
+                    {t('admin.dashboard.systemOverview', 'System Overview')}
                   </h2>
                   
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
@@ -202,7 +208,7 @@ const ModernAdminDashboard = () => {
                         {stats.totalBooks}
                       </div>
                       <div className="text-xs text-neutral-500 uppercase tracking-wide">
-                        Total Books
+                        {t('admin.dashboard.totalBooks')}
                       </div>
                     </div>
                     
@@ -214,7 +220,7 @@ const ModernAdminDashboard = () => {
                         {stats.totalUsers}
                       </div>
                       <div className="text-xs text-neutral-500 uppercase tracking-wide">
-                        Members
+                        {t('admin.dashboard.members', 'Members')}
                       </div>
                     </div>
                     
@@ -226,7 +232,7 @@ const ModernAdminDashboard = () => {
                         {stats.activeCheckouts}
                       </div>
                       <div className="text-xs text-neutral-500 uppercase tracking-wide">
-                        Active Loans
+                        {t('admin.dashboard.activeLoans', 'Active Loans')}
                       </div>
                     </div>
                     
@@ -238,7 +244,7 @@ const ModernAdminDashboard = () => {
                         {stats.returnsToday}
                       </div>
                       <div className="text-xs text-neutral-500 uppercase tracking-wide">
-                        Returns Today
+                        {t('admin.dashboard.returnsToday')}
                       </div>
                     </div>
                   </div>
@@ -246,13 +252,13 @@ const ModernAdminDashboard = () => {
                   {/* Chart placeholder */}
                   <div className="mt-4">
                     <h3 className="text-base font-medium text-neutral-900 mb-3">
-                      Checkouts Over Time
+                      {t('admin.dashboard.checkoutsOverTime', 'Checkouts Over Time')}
                     </h3>
                     <div className="h-64 bg-neutral-50 rounded-lg flex items-center justify-center">
                       <div className="text-neutral-400 text-center">
                         <TrophyIcon className="h-10 w-10 mx-auto mb-2" />
-                        <p>Interactive chart will appear here</p>
-                        <p className="text-sm">Showing checkout trends over time</p>
+                        <p>{t('admin.dashboard.chartPlaceholder', 'Interactive chart will appear here')}</p>
+                        <p className="text-sm">{t('admin.dashboard.chartDescription', 'Showing checkout trends over time')}</p>
                       </div>
                     </div>
                   </div>
@@ -260,7 +266,7 @@ const ModernAdminDashboard = () => {
                 
                 <div className="card p-6 md:p-8">
                   <h2 className="text-xl font-semibold text-neutral-900 mb-6">
-                    Quick Actions
+                    {t('admin.dashboard.quickActions', 'Quick Actions')}
                   </h2>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -273,10 +279,10 @@ const ModernAdminDashboard = () => {
                         </div>
                         <div>
                           <h3 className="font-medium text-neutral-900 mb-1 group-hover:text-primary-600 transition-colors">
-                            Add New Book
+                            {t('admin.manageBooks.addBook')}
                           </h3>
                           <p className="text-sm text-neutral-600">
-                            Add a new book to the library catalog
+                            {t('admin.dashboard.addBookDescription', 'Add a new book to the library catalog')}
                           </p>
                         </div>
                       </div>
@@ -291,10 +297,10 @@ const ModernAdminDashboard = () => {
                         </div>
                         <div>
                           <h3 className="font-medium text-neutral-900 mb-1 group-hover:text-primary-600 transition-colors">
-                            Register User
+                            {t('admin.manageUsers.addUser')}
                           </h3>
                           <p className="text-sm text-neutral-600">
-                            Create a new user account
+                            {t('admin.dashboard.createUserDescription', 'Create a new user account')}
                           </p>
                         </div>
                       </div>
@@ -309,10 +315,10 @@ const ModernAdminDashboard = () => {
                         </div>
                         <div>
                           <h3 className="font-medium text-neutral-900 mb-1 group-hover:text-primary-600 transition-colors">
-                            New Checkout
+                            {t('admin.manageCheckouts.newCheckout')}
                           </h3>
                           <p className="text-sm text-neutral-600">
-                            Process a new book checkout
+                            {t('admin.dashboard.newCheckoutDescription', 'Process a new book checkout')}
                           </p>
                         </div>
                       </div>
@@ -327,10 +333,10 @@ const ModernAdminDashboard = () => {
                         </div>
                         <div>
                           <h3 className="font-medium text-neutral-900 mb-1 group-hover:text-primary-600 transition-colors">
-                            Process Return
+                            {t('admin.manageCheckouts.processReturn')}
                           </h3>
                           <p className="text-sm text-neutral-600">
-                            Process a book return
+                            {t('admin.dashboard.processReturnDescription', 'Process a book return')}
                           </p>
                         </div>
                       </div>
@@ -343,7 +349,7 @@ const ModernAdminDashboard = () => {
               <div className="lg:col-span-1">
                 <div className="card p-6 md:p-8 mb-8">
                   <h2 className="text-xl font-semibold text-neutral-900 mb-6">
-                    Recent Activity
+                    {t('admin.dashboard.recentActivity', 'Recent Activity')}
                   </h2>
                   
                   <div className="space-y-5">
@@ -403,14 +409,14 @@ const ModernAdminDashboard = () => {
                   
                   <div className="mt-6 pt-4 border-t border-neutral-100 text-center">
                     <button className="text-sm font-medium text-primary-600 hover:text-primary-700">
-                      View all activity
+                      {t('admin.dashboard.viewAllActivity', 'View all activity')}
                     </button>
                   </div>
                 </div>
                 
                 <div className="card p-6 md:p-8">
                   <h2 className="text-xl font-semibold text-neutral-900 mb-4">
-                    System Status
+                    {t('admin.dashboard.systemStatus', 'System Status')}
                   </h2>
                   
                   <div className="flex items-center mb-4">
@@ -419,23 +425,23 @@ const ModernAdminDashboard = () => {
                       <div className="absolute h-3 w-3 bg-green-500 rounded-full animate-ping"></div>
                     </div>
                     <div>
-                      <p className="text-sm font-medium">All systems operational</p>
-                      <p className="text-xs text-neutral-500">Last updated: 10 minutes ago</p>
+                      <p className="text-sm font-medium">{t('admin.dashboard.allSystemsOperational', 'All systems operational')}</p>
+                      <p className="text-xs text-neutral-500">{t('admin.dashboard.lastUpdated', 'Last updated')}: 10 minutes ago</p>
                     </div>
                   </div>
                   
                   <div className="space-y-2">
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-neutral-600">Database</span>
-                      <span className="text-green-600 font-medium">Operational</span>
+                      <span className="text-neutral-600">{t('admin.dashboard.database', 'Database')}</span>
+                      <span className="text-green-600 font-medium">{t('admin.dashboard.operational', 'Operational')}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-neutral-600">API</span>
-                      <span className="text-green-600 font-medium">Operational</span>
+                      <span className="text-neutral-600">{t('admin.dashboard.api', 'API')}</span>
+                      <span className="text-green-600 font-medium">{t('admin.dashboard.operational', 'Operational')}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-neutral-600">Web Interface</span>
-                      <span className="text-green-600 font-medium">Operational</span>
+                      <span className="text-neutral-600">{t('admin.dashboard.webInterface', 'Web Interface')}</span>
+                      <span className="text-green-600 font-medium">{t('admin.dashboard.operational', 'Operational')}</span>
                     </div>
                   </div>
                 </div>

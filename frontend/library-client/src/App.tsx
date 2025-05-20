@@ -20,6 +20,7 @@ import ModernEditProfile from './pages/ModernEditProfile.js';
 import ProtectedRoute from './components/ProtectedRoute.js';
 import AdminRoute from './components/AdminRoute.js';
 import { useAppTitle } from './utils/usePageTitle';
+import { useTranslation } from 'react-i18next';
 
 // Placeholder pages that haven't been modernized yet
 const ForgotPassword = () => <div className="container-custom pt-24 pb-16"><h1 className="text-2xl font-bold mb-4 dark:text-burrito-beige">Forgot Password</h1><p className="auto-theme-text">This page is under construction.</p></div>;
@@ -28,6 +29,7 @@ const ResetPassword = () => <div className="container-custom pt-24 pb-16"><h1 cl
 function App() {
   // Set the app title based on current language
   useAppTitle();
+  const { t } = useTranslation();
 
   return (
     <AuthProvider>
@@ -67,7 +69,7 @@ function App() {
             </main>
             <footer className="bg-gray-800 dark:bg-burrito-dark-surface text-white p-4 text-center border-t dark:border-burrito-dark-border">
               <div className="container-custom">
-                <p>&copy; {new Date().getFullYear()} LibraryHub Management System</p>
+                <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
               </div>
             </footer>
           </div>

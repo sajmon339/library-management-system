@@ -189,7 +189,7 @@ const ModernNavbar = () => {
                       alt="Universidad de WSBurrito Logo" 
                       className="h-10 w-10 mr-2 rounded-full object-cover" 
                     />
-                    <span className="text-xl md:text-2xl whitespace-nowrap">Universidad de WSBurrito</span>
+                    <span className="text-xl md:text-2xl whitespace-normal">Universidad de WSBurrito</span>
                   </Link>
                 </div>
                 

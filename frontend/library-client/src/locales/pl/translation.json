@@ -1,9 +1,14 @@
 {
   "app": {
-    "title": "System Zarządzania Biblioteką"
+    "title": "Universidad de WSBurrito"
   },
   "common": {
     "loading": "Ładowanie...",
+    "left": "pozostało",
+    "catalogNumber": "Numer katalogowy",
+    "returned": "Zwrócona",
+    "availability": "Dostępność",
+    "by": "autor",
     "error": "Wystąpił błąd",
     "success": "Sukces",
     "cancel": "Anuluj",
@@ -34,7 +39,8 @@
     "failedToLoad": "Nie udało się załadować danych. Spróbuj ponownie później.",
     "areYouSure": "Czy na pewno?",
     "cover": "Okładka",
-    "tip": "WSKAZÓWKA"
+    "tip": "WSKAZÓWKA",
+    "tryAgain": "Spróbuj ponownie"
   },
   "nav": {
     "home": "Strona główna",
@@ -57,8 +63,8 @@
     "signedInAs": "Zalogowany jako"
   },
   "home": {
-    "title": "Universidad de WSBurrito",
-    "subtitle": "Wielką Lekturę",
+    "title": "Odkryj swoją następną ulubioną książkę",
+    "subtitle": "",
     "description": "Przeglądaj tysiące książek, zarządzaj swoją osobistą biblioteką i odkrywaj nowych autorów oraz gatunki w jednym miejscu.",
     "featuredBooks": "Polecane książki",
     "viewAll": "Zobacz wszystkie książki",
@@ -72,7 +78,25 @@
       "members": "Aktywni członkowie"
     },
     "genres": "Przeglądaj według gatunku",
-    "viewMore": "Zobacz więcej"
+    "viewMore": "Zobacz więcej",
+    "browseByGenre": "Przeglądaj według gatunku",
+    "exploreCollection": "Przeglądaj naszą bogatą kolekcję według ulubionych kategorii",
+    "librariansPicks": "Najlepsze propozycje naszych bibliotekarzy w tym miesiącu",
+    "seeAllGenres": "Zobacz wszystkie gatunki",
+    "everythingInOnePlace": "Wszystko, czego potrzebujesz w jednym miejscu",
+    "systemDescription": "Nasz system zarządzania biblioteką zapewnia potężne narzędzia zarówno dla czytelników, jak i bibliotekarzy",
+    "extensiveCatalog": "Obszerny katalog",
+    "catalogDescription": "Przeglądaj tysiące książek ze szczegółowymi informacjami, w tym streszczeniami, biografiami autorów i dostępnością.",
+    "exploreCatalog": "Przeglądaj katalog",
+    "easyCheckout": "Łatwy proces wypożyczania",
+    "checkoutDescription": "Wypożyczaj książki w uproszczonym procesie, zarządzaj okresami wypożyczeń i otrzymuj przypomnienia o terminach zwrotu.",
+    "signUpNow": "Zarejestruj się teraz",
+    "adminManagement": "Zarządzanie administracyjne",
+    "adminDescription": "Potężne narzędzia dla bibliotekarzy do zarządzania inwentarzem, śledzenia wypożyczeń, dodawania nowych książek i analizowania wykorzystania biblioteki.",
+    "readingJourney": "Gotowy, aby rozpocząć swoją przygodę z czytaniem?",
+    "joinDescription": "Dołącz do naszej biblioteki już dziś i uzyskaj dostęp do tysięcy książek, spersonalizowanych rekomendacji i tętniącej życiem społeczności czytelników.",
+    "digitalAccess": "Dostęp cyfrowy",
+    "genresCount": "Gatunki"
   },
   "books": {
     "title": "Kolekcja biblioteki",
@@ -101,17 +125,23 @@
     "left": "pozostało",
     "catalogNumber": "Numer katalogowy",
     "returned": "Zwrócone",
-    "availability": "Dostępność"
+    "availability": "Dostępność",
+    "by": "autor"
   },
   "bookDetail": {
     "checkoutTitle": "Wypożycz książkę",
     "checkoutMessage": "Czy na pewno chcesz wypożyczyć",
     "daysToReturn": "Dni do zwrotu",
     "checkoutSuccess": "Książka została pomyślnie wypożyczona",
-    "checkoutError": "Nie udało się wypożyczyć książki"
+    "checkoutError": "Nie udało się wypożyczyć książki",
+    "about": "O tej książce",
+    "noDescription": "Brak dostępnego opisu dla tej książki.",
+    "signInToCheckOut": "Zaloguj się, aby wypożyczyć"
   },
   "login": {
     "title": "Zaloguj się na swoje konto",
+    "welcome": "Witaj ponownie",
+    "subtitle": "Zaloguj się, aby uzyskać dostęp do swojego konta",
     "email": "Adres e-mail",
     "password": "Hasło",
     "forgotPassword": "Zapomniałeś hasła?",
@@ -174,11 +204,16 @@
     "currentlyBorrowed": "Aktualnie wypożyczone",
     "readingHistory": "Historia czytania",
     "noBooksMessage": "Nie wypożyczyłeś jeszcze żadnych książek",
-    "noHistoryMessage": "Twoja historia czytania jest pusta"
+    "noHistoryMessage": "Twoja historia czytania jest pusta",
+    "noBooksTitle": "Brak wypożyczonych książek",
+    "noBooksDescription": "Nie wypożyczyłeś jeszcze żadnych książek. Przeglądaj naszą kolekcję i znajdź swoją następną świetną lekturę!",
+    "browseBooks": "Przeglądaj książki",
+    "manageBooks": "Zarządzaj wypożyczonymi książkami i przeglądaj historię wypożyczeń"
   },
   "admin": {
     "dashboard": {
       "title": "Panel administratora",
+      "subtitle": "Zarządzaj systemem bibliotecznym i monitoruj kluczowe wskaźniki",
       "quickStats": "Szybkie statystyki",
       "totalBooks": "Liczba książek",
       "availableBooks": "Dostępne książki",
@@ -186,7 +221,18 @@
       "activeCheckouts": "Aktywne wypożyczenia",
       "overdueCheckouts": "Przeterminowane wypożyczenia",
       "returnsToday": "Zwroty dzisiaj",
-      "recentActivity": "Ostatnia aktywność"
+      "recentActivity": "Ostatnia aktywność",
+      "systemOverview": "Przegląd systemu",
+      "members": "Członkowie",
+      "activeMembers": "Aktywni członkowie biblioteki",
+      "activeLoans": "Aktywne wypożyczenia",
+      "noOverdueItems": "Brak przeterminowanych pozycji",
+      "checkoutsOverTime": "Wypożyczenia w czasie",
+      "chartPlaceholder": "Interaktywny wykres pojawi się tutaj",
+      "chartDescription": "Pokazuje trendy wypożyczeń w czasie",
+      "quickActions": "Szybkie akcje",
+      "addBookDescription": "Dodaj nową książkę do katalogu biblioteki",
+      "createUserDescription": "Utwórz nowe konto użytkownika"
     },
     "manageBooks": {
       "title": "Zarządzaj książkami",
@@ -308,5 +354,11 @@
     "english": "Angielski",
     "polish": "Polski",
     "select": "Wybierz język"
+  },
+  "auth": {
+    "signUpFree": "Zarejestruj się za darmo", 
+    "alreadyMember": "Masz już konto? Zaloguj się",
+    "browseCollection": "Przeglądaj kolekcję",
+    "or": "Lub"
   }
 }

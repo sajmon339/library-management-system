@@ -119,14 +119,15 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var maxRetries = 10;
     var retryDelayMs = 5000; // 5 seconds
-      for (int retry = 0; retry < maxRetries; retry++)
+    for (int retry = 0; retry < maxRetries; retry++)
     {
         try
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
-            
-            // Try to connect to the database
+              // Try to connect to the database
             Console.WriteLine($"Attempt {retry + 1}/{maxRetries} to connect to the database...");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            Console.WriteLine($"Using connection string: {connectionString?.Replace("Password=admin", "Password=***") ?? "No connection string found"}");
             
             // Check if tables exist before applying migrations
             bool tablesExist = false;
@@ -244,7 +245,9 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.Urls.Add("http://+:8000"); // Explicitly bind to port 8000
+// Use the port from environment variable if set, otherwise use 8001
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8001";
+app.Urls.Add($"http://+:{port}");
 
 // Register controllers
 app.MapControllers();
