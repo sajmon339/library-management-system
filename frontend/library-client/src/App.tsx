@@ -19,12 +19,16 @@ import ModernChangePassword from './pages/ModernChangePassword.js';
 import ModernEditProfile from './pages/ModernEditProfile.js';
 import ProtectedRoute from './components/ProtectedRoute.js';
 import AdminRoute from './components/AdminRoute.js';
+import { useAppTitle } from './utils/usePageTitle';
 
 // Placeholder pages that haven't been modernized yet
 const ForgotPassword = () => <div className="container-custom pt-24 pb-16"><h1 className="text-2xl font-bold mb-4 dark:text-burrito-beige">Forgot Password</h1><p className="auto-theme-text">This page is under construction.</p></div>;
 const ResetPassword = () => <div className="container-custom pt-24 pb-16"><h1 className="text-2xl font-bold mb-4 dark:text-burrito-beige">Reset Password</h1><p className="auto-theme-text">This page is under construction.</p></div>;
 
 function App() {
+  // Set the app title based on current language
+  useAppTitle();
+
   return (
     <AuthProvider>
       <ThemeProvider>

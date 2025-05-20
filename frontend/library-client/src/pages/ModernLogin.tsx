@@ -3,6 +3,8 @@ import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import type { LoginDto } from '../types/user.js';
+import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../utils/usePageTitle.js';
 
 const ModernLogin = () => {
   const [formData, setFormData] = useState<LoginDto>({
@@ -14,6 +16,10 @@ const ModernLogin = () => {
   
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  
+  // Set page title
+  usePageTitle(t('login.title'));
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -85,6 +91,14 @@ const ModernLogin = () => {
         </div>
       </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-burrito-brown dark:text-burrito-cheese">
+            {t('login.title')}
+          </h1>
+        </div>
+      </div>
+
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="card px-6 py-8 sm:px-10">
           {error && (
@@ -97,7 +111,7 @@ const ModernLogin = () => {
                 </div>
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-red-800">
-                    {typeof error === 'string' ? error : 'Invalid email or password'}
+                    {typeof error === 'string' ? error : t('login.invalidCredentials')}
                   </h3>
                 </div>
               </div>
@@ -107,7 +121,7 @@ const ModernLogin = () => {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">
-                Email Address
+                {t('login.email')}
               </label>
               <input
                 id="email"
@@ -115,7 +129,7 @@ const ModernLogin = () => {
                 type="email"
                 required
                 className="appearance-none block w-full px-4 py-3 border border-neutral-300 rounded-lg text-neutral-800 bg-white shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 transition duration-150"
-                placeholder="Enter your email address"
+                placeholder={t('login.email')}
                 value={formData.email}
                 onChange={handleChange}
               />
@@ -124,13 +138,13 @@ const ModernLogin = () => {
             <div>
               <div className="flex items-center justify-between">
                 <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">
-                  Password
+                  {t('login.password')}
                 </label>
                 <Link
                   to="/forgot-password"
                   className="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors"
                 >
-                  Forgot password?
+                  {t('login.forgotPassword')}
                 </Link>
               </div>
               <input
@@ -140,7 +154,7 @@ const ModernLogin = () => {
                 autoComplete="current-password"
                 required
                 className="appearance-none block w-full px-4 py-3 border border-neutral-300 rounded-lg text-neutral-800 bg-white shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 transition duration-150"
-                placeholder="Enter your password"
+                placeholder={t('login.password')}
                 value={formData.password}
                 onChange={handleChange}
               />
@@ -161,7 +175,7 @@ const ModernLogin = () => {
                     Signing in...
                   </div>
                 ) : (
-                  'Sign in'
+                  t('login.loginButton')
                 )}
               </button>
             </div>
@@ -179,12 +193,12 @@ const ModernLogin = () => {
 
             <div className="mt-6 text-center">
               <p className="text-base text-neutral-600">
-                Don't have an account?{' '}
+                {t('login.newUser')}{' '}
                 <Link
                   to="/register"
                   className="font-semibold text-primary-600 hover:text-primary-700 transition-colors"
                 >
-                  Sign up for free
+                  {t('login.createAccount')}
                 </Link>
               </p>
             </div>

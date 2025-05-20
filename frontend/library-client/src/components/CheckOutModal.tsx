@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 interface CheckOutModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface CheckOutModalProps {
 }
 
 const CheckOutModal = ({ isOpen, onClose, onConfirm, bookTitle }: CheckOutModalProps) => {
+  const { t } = useTranslation();
   const [daysToReturn, setDaysToReturn] = useState(14); // Default to 14 days
   
   if (!isOpen) return null;
@@ -27,7 +29,7 @@ const CheckOutModal = ({ isOpen, onClose, onConfirm, bookTitle }: CheckOutModalP
               className="bg-white rounded-md text-neutral-400 hover:text-neutral-500 focus:outline-none"
               onClick={onClose}
             >
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{t('common.cancel')}</span>
               <XMarkIcon className="h-6 w-6" />
             </button>
           </div>
@@ -35,16 +37,16 @@ const CheckOutModal = ({ isOpen, onClose, onConfirm, bookTitle }: CheckOutModalP
           <div className="sm:flex sm:items-start">
             <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
               <h3 className="text-lg leading-6 font-medium text-neutral-900" id="modal-title">
-                Check Out Book
+                {t('bookDetail.checkoutTitle')}
               </h3>
               <div className="mt-2">
                 <p className="text-sm text-neutral-500 mb-4">
-                  You are about to check out <span className="font-medium text-neutral-700">"{bookTitle}"</span>. How many days would you like to borrow this book?
+                  {t('bookDetail.checkoutMessage')} <span className="font-medium text-neutral-700">"{bookTitle}"</span>?
                 </p>
                 
                 <div className="mb-6">
                   <label htmlFor="daysToReturn" className="block text-sm font-medium text-neutral-700 mb-1">
-                    Days to Return
+                    {t('bookDetail.daysToReturn')}
                   </label>
                   <select
                     id="daysToReturn"
@@ -52,10 +54,10 @@ const CheckOutModal = ({ isOpen, onClose, onConfirm, bookTitle }: CheckOutModalP
                     value={daysToReturn}
                     onChange={(e) => setDaysToReturn(parseInt(e.target.value))}
                   >
-                    <option value={7}>7 days (1 week)</option>
-                    <option value={14}>14 days (2 weeks)</option>
-                    <option value={21}>21 days (3 weeks)</option>
-                    <option value={30}>30 days (1 month)</option>
+                    <option value={7}>7 {t('common.days')} (1 {t('common.week')})</option>
+                    <option value={14}>14 {t('common.days')} (2 {t('common.weeks')})</option>
+                    <option value={21}>21 {t('common.days')} (3 {t('common.weeks')})</option>
+                    <option value={30}>30 {t('common.days')} (1 {t('common.month')})</option>
                   </select>
                 </div>
               </div>
@@ -67,14 +69,14 @@ const CheckOutModal = ({ isOpen, onClose, onConfirm, bookTitle }: CheckOutModalP
               className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm"
               onClick={() => onConfirm(daysToReturn)}
             >
-              Confirm Check Out
+              {t('common.confirm')}
             </button>
             <button
               type="button"
               className="mt-3 w-full inline-flex justify-center rounded-md border border-neutral-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-neutral-700 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:w-auto sm:text-sm"
               onClick={onClose}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </div>

@@ -11,8 +11,11 @@ import {
   BuildingLibraryIcon,
   ArrowLeftIcon
 } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../utils/usePageTitle.js';
 
 const ModernBookDetail = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,15 +35,17 @@ const ModernBookDetail = () => {
       try {
         const data = await bookService.getBookById(parseInt(id, 10));
         setBook(data);
+        // Set page title with book title
+        usePageTitle(data.title);
       } catch (err) {
-        setError('Error loading book details. Please try again later.');
+        setError(t('errors.serverError'));
       } finally {
         setLoading(false);
       }
     };
     
     fetchBook();
-  }, [id]);
+  }, [id, t]);
   
   const handleCheckoutButtonClick = () => {
     setIsCheckoutModalOpen(true);
@@ -94,11 +99,11 @@ const ModernBookDetail = () => {
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium">Success!</h3>
-              <p className="mt-1 text-sm">This book has been checked out successfully.</p>
+              <h3 className="text-sm font-medium">{t('common.success')}!</h3>
+              <p className="mt-1 text-sm">{t('bookDetail.checkoutSuccess')}</p>
               <div className="mt-2">
                 <Link to="/my-books" className="text-sm font-medium text-green-800 underline">
-                  View your checked out books
+                  {t('myBooks.title')}
                 </Link>
               </div>
             </div>
@@ -113,7 +118,7 @@ const ModernBookDetail = () => {
           disabled
           className="btn bg-neutral-200 text-neutral-500 cursor-not-allowed mt-2"
         >
-          Unavailable
+          {t('books.unavailable')}
         </button>
       );
     }
@@ -131,10 +136,10 @@ const ModernBookDetail = () => {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Processing...
+              {t('common.loading')}
             </div>
           ) : (
-            'Check out this book'
+            t('books.checkout')
           )}
         </button>
       </div>
@@ -159,16 +164,16 @@ const ModernBookDetail = () => {
       <div className="min-h-screen pt-24 pb-12 flex justify-center">
         <div className="max-w-md w-full bg-white rounded-lg shadow-soft p-8 text-center">
           <h2 className="text-2xl font-heading font-bold text-neutral-900 mb-4">
-            Book Not Found
+            {t('books.noBooks')}
           </h2>
           <p className="text-neutral-600 mb-6">
-            {error || "We couldn't find the book you're looking for."}
+            {error || t('errors.serverError')}
           </p>
           <button 
             onClick={() => navigate('/books')}
             className="btn btn-primary"
           >
-            Return to Catalog
+            {t('common.back')}
           </button>
         </div>
       </div>
@@ -184,7 +189,7 @@ const ModernBookDetail = () => {
             className="inline-flex items-center text-neutral-600 hover:text-primary-600 transition-colors"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-1" />
-            Back to catalog
+            {t('common.back')}
           </button>
         </div>
         
@@ -208,24 +213,24 @@ const ModernBookDetail = () => {
                 <div className="text-center text-white p-6">
                   <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="h-16 w-16 mx-auto mb-4 opacity-90 rounded-full object-cover" />
                   <h2 className="text-2xl font-bold mb-2">{book.title}</h2>
-                  <p className="opacity-80">by {book.author}</p>
+                  <p className="opacity-80">{t('books.author')}: {book.author}</p>
                 </div>
               )}
             </div>
             
             <div className="mt-6">
               <div className="card p-6">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4">Availability</h3>
+                <h3 className="text-lg font-semibold text-neutral-900 mb-4">{t('books.availability')}</h3>
                 
                 <div className="flex justify-between mb-2">
-                  <span className="text-neutral-600">Status:</span>
+                  <span className="text-neutral-600">{t('admin.manageCheckouts.status')}:</span>
                   <span className={`font-medium ${book.availableCopies > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {book.availableCopies > 0 ? 'Available' : 'Unavailable'}
+                    {book.availableCopies > 0 ? t('books.available') : t('books.unavailable')}
                   </span>
                 </div>
                 
                 <div className="flex justify-between mb-4">
-                  <span className="text-neutral-600">Copies available:</span>
+                  <span className="text-neutral-600">{t('books.copies')}:</span>
                   <span className="font-medium text-neutral-900">{book.availableCopies} of {book.totalCopies}</span>
                 </div>
                 
@@ -244,7 +249,7 @@ const ModernBookDetail = () => {
           <div className="lg:col-span-2">
             <div className="card p-6 sm:p-8">
               <h1 className="text-3xl font-heading font-bold text-neutral-900 mb-2">{book.title}</h1>
-              <p className="text-xl text-neutral-600 mb-6">by {book.author}</p>
+              <p className="text-xl text-neutral-600 mb-6">{t('books.author')}: {book.author}</p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                 <div className="flex items-center gap-3">
@@ -252,7 +257,7 @@ const ModernBookDetail = () => {
                     <CalendarIcon className="h-5 w-5 text-primary-600" />
                   </div>
                   <div>
-                    <div className="text-sm text-neutral-500">Year Published</div>
+                    <div className="text-sm text-neutral-500">{t('books.publishedYear')}</div>
                     <div className="font-medium">{book.publishedYear}</div>
                   </div>
                 </div>
@@ -262,7 +267,7 @@ const ModernBookDetail = () => {
                     <BuildingLibraryIcon className="h-5 w-5 text-primary-600" />
                   </div>
                   <div>
-                    <div className="text-sm text-neutral-500">Publisher</div>
+                    <div className="text-sm text-neutral-500">{t('books.publisher')}</div>
                     <div className="font-medium">{book.publisher}</div>
                   </div>
                 </div>
@@ -275,7 +280,7 @@ const ModernBookDetail = () => {
                     </svg>
                   </div>
                   <div>
-                    <div className="text-sm text-neutral-500">Genre</div>
+                    <div className="text-sm text-neutral-500">{t('books.genre')}</div>
                     <div className="font-medium">{book.genre.replace(/([A-Z])/g, ' $1').trim()}</div>
                   </div>
                 </div>
@@ -287,7 +292,7 @@ const ModernBookDetail = () => {
                     </svg>
                   </div>
                   <div>
-                    <div className="text-sm text-neutral-500">Catalog Number</div>
+                    <div className="text-sm text-neutral-500">{t('books.catalogNumber')}</div>
                     <div className="font-medium">{book.catalogNumber}</div>
                   </div>
                 </div>

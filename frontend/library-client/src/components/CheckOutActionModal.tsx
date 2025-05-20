@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { CheckOut } from '../types/checkOut';
+import { useTranslation } from 'react-i18next';
 
 interface CheckOutActionModalProps {
   isOpen: boolean;
@@ -11,13 +12,14 @@ interface CheckOutActionModalProps {
 }
 
 const CheckOutActionModal = ({ isOpen, onClose, onReturn, onRenew, checkOut }: CheckOutActionModalProps) => {
+  const { t, i18n } = useTranslation();
   const [actionType, setActionType] = useState<'return' | 'renew'>('return');
   
   if (!isOpen || !checkOut) return null;
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(i18n.language, {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -63,20 +65,20 @@ const CheckOutActionModal = ({ isOpen, onClose, onReturn, onRenew, checkOut }: C
           <div className="sm:flex sm:items-start">
             <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
               <h3 className="text-lg leading-6 font-medium text-neutral-900" id="modal-title">
-                Book Details
+                {t('checkOutAction.title')}
               </h3>
               
               <div className="mt-4 bg-neutral-50 p-4 rounded-lg">
                 <h4 className="font-medium text-neutral-900">{checkOut.bookTitle}</h4>
-                <p className="text-sm text-neutral-600">Catalog #: {checkOut.catalogNumber}</p>
+                <p className="text-sm text-neutral-600">{t('books.catalogNumber')}: {checkOut.catalogNumber}</p>
                 
                 <div className="mt-3 grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-neutral-500">Checked out:</span>
+                    <span className="text-neutral-500">{t('admin.manageCheckouts.checkedOutDate')}:</span>
                     <p className="font-medium">{formatDate(checkOut.checkOutDate)}</p>
                   </div>
                   <div>
-                    <span className="text-neutral-500">Due date:</span>
+                    <span className="text-neutral-500">{t('books.dueDate')}:</span>
                     <p className={`font-medium ${isOverdue ? 'text-red-600' : ''}`}>
                       {formatDate(checkOut.dueDate)}
                     </p>
@@ -85,8 +87,8 @@ const CheckOutActionModal = ({ isOpen, onClose, onReturn, onRenew, checkOut }: C
                 
                 <div className={`mt-3 text-sm ${isOverdue ? 'text-red-600 font-semibold' : 'text-primary-600'}`}>
                   {isOverdue
-                    ? `${Math.abs(daysLeft)} days overdue`
-                    : `${daysLeft} days left until due`}
+                    ? t('common.overdue') + ': ' + Math.abs(daysLeft) + ' ' + t(Math.abs(daysLeft) === 1 ? 'common.day' : 'common.days')
+                    : daysLeft + ' ' + t(daysLeft === 1 ? 'common.day' : 'common.days') + ' ' + t('books.left')}
                 </div>
               </div>
               
@@ -102,8 +104,8 @@ const CheckOutActionModal = ({ isOpen, onClose, onReturn, onRenew, checkOut }: C
                       className="focus:ring-primary-500 h-4 w-4 text-primary-600 border-neutral-300"
                     />
                     <label htmlFor="action-return" className="ml-3">
-                      <span className="block text-sm font-medium text-neutral-700">Return this book</span>
-                      <span className="block text-xs text-neutral-500">The book will be marked as returned and available for others</span>
+                      <span className="block text-sm font-medium text-neutral-700">{t('checkOutAction.returnBook')}</span>
+                      <span className="block text-xs text-neutral-500">{t('checkOutAction.returnDescription', 'The book will be marked as returned and available for others')}</span>
                     </label>
                   </div>
                   
@@ -118,10 +120,10 @@ const CheckOutActionModal = ({ isOpen, onClose, onReturn, onRenew, checkOut }: C
                       disabled={isOverdue}
                     />
                     <label htmlFor="action-renew" className={`ml-3 ${isOverdue ? 'opacity-50' : ''}`}>
-                      <span className="block text-sm font-medium text-neutral-700">Renew for 14 more days</span>
-                      <span className="block text-xs text-neutral-500">Extend the due date by 14 days</span>
+                      <span className="block text-sm font-medium text-neutral-700">{t('checkOutAction.renewBook')}</span>
+                      <span className="block text-xs text-neutral-500">{t('checkOutAction.renewDescription', 'Extend the due date by 14 days')}</span>
                       {isOverdue && (
-                        <span className="block text-xs text-red-600 mt-1">Cannot renew overdue books</span>
+                        <span className="block text-xs text-red-600 mt-1">{t('checkOutAction.cannotRenewOverdue', 'Cannot renew overdue books')}</span>
                       )}
                     </label>
                   </div>
@@ -139,14 +141,14 @@ const CheckOutActionModal = ({ isOpen, onClose, onReturn, onRenew, checkOut }: C
                   : 'bg-primary-600 hover:bg-primary-700 focus:ring-primary-500'}`}
               onClick={() => actionType === 'return' ? onReturn() : onRenew()}
             >
-              {actionType === 'return' ? 'Return Book' : 'Renew Checkout'}
+              {actionType === 'return' ? t('checkOutAction.returnBook') : t('checkOutAction.renewBook')}
             </button>
             <button
               type="button"
               className="mt-3 w-full inline-flex justify-center rounded-md border border-neutral-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-neutral-700 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:w-auto sm:text-sm"
               onClick={onClose}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </div>

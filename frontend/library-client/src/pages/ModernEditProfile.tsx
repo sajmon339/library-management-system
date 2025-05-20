@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { UserIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../utils/usePageTitle.js';
 
 interface ProfileFormData {
   userName: string;
@@ -9,8 +11,12 @@ interface ProfileFormData {
 }
 
 const ModernEditProfile = () => {
+  const { t } = useTranslation();
   const { user, updateUserProfile } = useAuth();
   const navigate = useNavigate();
+  
+  // Set page title
+  usePageTitle(t('editProfile.title'));
   
   const [formData, setFormData] = useState<ProfileFormData>({
     userName: '',
@@ -48,7 +54,7 @@ const ModernEditProfile = () => {
         email: formData.email
       });
       
-      setSuccess('Profile updated successfully!');
+      setSuccess(t('editProfile.successMessage'));
       
       // Redirect after a short delay
       setTimeout(() => {
@@ -61,7 +67,7 @@ const ModernEditProfile = () => {
       if (err.response?.data) {
         setError(err.response.data);
       } else {
-        setError('An error occurred. Please try again.');
+        setError(t('errors.serverError'));
       }
     } finally {
       setLoading(false);
@@ -73,7 +79,7 @@ const ModernEditProfile = () => {
       <div className="bg-neutral-50 min-h-screen pt-24 pb-16">
         <div className="container-custom">
           <div className="text-center py-12">
-            <div className="text-xl text-neutral-600">Please log in to edit your profile.</div>
+            <div className="text-xl text-neutral-600">{t('common.error')}</div>
           </div>
         </div>
       </div>
@@ -85,10 +91,10 @@ const ModernEditProfile = () => {
       <div className="container-custom max-w-md mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-heading font-bold text-neutral-900 dark:text-burrito-beige mb-2">
-            Edit Profile
+            {t('editProfile.title')}
           </h1>
           <p className="auto-theme-text">
-            Update your account information
+            {t('profile.personalInfo')}
           </p>
         </div>
         
@@ -122,7 +128,7 @@ const ModernEditProfile = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="userName" className="block text-sm font-medium text-neutral-700 mb-1">
-                Username
+                {t('editProfile.username')}
               </label>
               <input
                 type="text"
@@ -137,7 +143,7 @@ const ModernEditProfile = () => {
             
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">
-                Email Address
+                {t('editProfile.email')}
               </label>
               <input
                 type="email"
@@ -152,7 +158,7 @@ const ModernEditProfile = () => {
             
             <div>
               <p className="text-sm text-neutral-500 italic mb-2">
-                Note: To change your password, please use the Change Password page.
+                {t('changePassword.passwordRequirements')}
               </p>
             </div>
             
@@ -162,14 +168,14 @@ const ModernEditProfile = () => {
                 onClick={() => navigate('/profile')}
                 className="px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={loading}
                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-primary-400"
               >
-                {loading ? 'Saving...' : 'Save Changes'}
+                {loading ? t('common.loading') : t('editProfile.saveChanges')}
               </button>
             </div>
           </form>

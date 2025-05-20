@@ -6,8 +6,13 @@ import CheckOutActionModal from '../components/CheckOutActionModal';
 import { ArrowPathIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../utils/usePageTitle.js';
 
 const ModernManageCheckouts = () => {
+  const { t, i18n } = useTranslation();
+  usePageTitle(t('admin.manageCheckouts.title'));
+  
   const [checkouts, setCheckouts] = useState<CheckOut[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +81,7 @@ const ModernManageCheckouts = () => {
       setCheckouts(data);
       setError(null);
     } catch (err) {
-      setError('Failed to load checkouts. Please try again later.');
+      setError(t('common.failedToLoad'));
       console.error('Error fetching checkouts:', err);
     } finally {
       setLoading(false);
@@ -103,7 +108,7 @@ const ModernManageCheckouts = () => {
       
       setError(null);
     } catch (err) {
-      setError('Failed to return book. Please try again.');
+      setError(t('checkOutAction.failedAction'));
       console.error('Error returning book:', err);
     }
   };
@@ -119,7 +124,7 @@ const ModernManageCheckouts = () => {
       
       setError(null);
     } catch (err) {
-      setError('Failed to renew checkout. Please try again.');
+      setError(t('checkOutAction.failedAction'));
       console.error('Error renewing checkout:', err);
     }
   };
@@ -149,7 +154,7 @@ const ModernManageCheckouts = () => {
     if (date.getTime() < 86400000) {
       return 'N/A';
     }
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(i18n.language, {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -187,10 +192,10 @@ const ModernManageCheckouts = () => {
       <div className="container-custom">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 mb-2">
-            Manage Checkouts
+            {t('admin.manageCheckouts.title')}
           </h1>
           <p className="text-neutral-600">
-            View and manage library book checkouts
+            {t('admin.manageCheckouts.subtitle', 'View and manage library book checkouts')}
           </p>
         </div>
         
@@ -204,7 +209,7 @@ const ModernManageCheckouts = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                   </svg>
                   <span>
-                    <strong>TIP:</strong> Click on any non-returned checkout row or the "MANAGE BOOK" button to return or renew a book.
+                    <strong>{t('common.tip')}:</strong> {t('admin.manageCheckouts.rowClickTip', 'Click on any non-returned checkout row or the "MANAGE BOOK" button to return or renew a book.')}
                   </span>
                 </p>
                 <button 
@@ -228,7 +233,7 @@ const ModernManageCheckouts = () => {
                     : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'
                 }`}
               >
-                All Checkouts
+                {t('admin.manageCheckouts.allCheckouts')}
               </button>
               <button
                 onClick={() => setActiveTab('active')}
@@ -238,7 +243,7 @@ const ModernManageCheckouts = () => {
                     : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'
                 }`}
               >
-                Active
+                {t('common.active')}
               </button>
               <button
                 onClick={() => setActiveTab('overdue')}
@@ -248,7 +253,7 @@ const ModernManageCheckouts = () => {
                     : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'
                 }`}
               >
-                Overdue
+                {t('common.overdue')}
               </button>
             </nav>
           </div>
@@ -266,22 +271,22 @@ const ModernManageCheckouts = () => {
               <thead className="bg-neutral-100 dark:bg-burrito-dark-surface">
                 <tr>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Book
+                    {t('admin.manageCheckouts.book')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    User
+                    {t('admin.manageCheckouts.user')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Checkout Date
+                    {t('admin.manageCheckouts.checkedOutDate')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Due Date
+                    {t('admin.manageCheckouts.dueDate')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Status
+                    {t('admin.manageCheckouts.status')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                    Actions
+                    {t('common.actions')}
                   </th>
                 </tr>
               </thead>
@@ -293,7 +298,11 @@ const ModernManageCheckouts = () => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <p className="text-primary-600 font-medium">Loading {activeTab === 'all' ? 'all' : activeTab} checkouts...</p>
+                      <p className="text-primary-600 font-medium">
+                        {t('common.loading')} {activeTab === 'all' ? t('admin.manageCheckouts.allCheckouts').toLowerCase() : 
+                          activeTab === 'active' ? t('common.active').toLowerCase() : 
+                          t('common.overdue').toLowerCase()}...
+                      </p>
                     </td>
                   </tr>
                 ) : checkouts.length === 0 ? (
@@ -302,8 +311,16 @@ const ModernManageCheckouts = () => {
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mx-auto mb-4 text-neutral-300">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 0 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 1 18 18a8.967 8.967 0 0 1-6 2.292m0-14.25v14.25" />
                       </svg>
-                      <p className="text-lg font-medium mb-1">No {activeTab === 'all' ? '' : activeTab} checkouts found</p>
-                      <p>There are currently no {activeTab === 'all' ? '' : activeTab} checkouts in the system.</p>
+                      <p className="text-lg font-medium mb-1">
+                        {t('admin.manageCheckouts.noCheckouts', { 
+                          type: activeTab === 'all' ? '' : activeTab === 'active' ? t('common.active').toLowerCase() : t('common.overdue').toLowerCase() 
+                        })}
+                      </p>
+                      <p>
+                        {t('admin.manageCheckouts.noCheckoutsDescription', { 
+                          type: activeTab === 'all' ? '' : activeTab === 'active' ? t('common.active').toLowerCase() : t('common.overdue').toLowerCase() 
+                        })}
+                      </p>
                     </td>
                   </tr>
                 ) : (
@@ -344,8 +361,8 @@ const ModernManageCheckouts = () => {
                           {!isReturned && (
                             <div className={`text-xs ${isOverdue ? 'text-red-600 font-semibold dark:text-red-400' : 'text-neutral-500 dark:text-burrito-gray'}`}>
                               {isOverdue
-                                ? `${Math.abs(daysLeft)} days overdue`
-                                : `${daysLeft} days left`}
+                                ? t('books.overdueWarning') + ' ' + Math.abs(daysLeft) + ' ' + t(Math.abs(daysLeft) === 1 ? 'common.day' : 'common.days')
+                                : daysLeft + ' ' + t(daysLeft === 1 ? 'common.day' : 'common.days') + ' ' + t('books.left')}
                             </div>
                           )}
                         </td>
@@ -354,10 +371,10 @@ const ModernManageCheckouts = () => {
                             getStatusClass(checkout.status, checkout.dueDate)
                           }`}>
                             {isReturned 
-                              ? 'Returned' 
+                              ? t('books.returned')
                               : isOverdue 
-                              ? 'Overdue' 
-                              : 'Active'}
+                              ? t('common.overdue')
+                              : t('common.active')}
                           </span>
                           {isReturned && (
                             <div className="text-xs text-neutral-500 dark:text-burrito-gray mt-1">
@@ -379,7 +396,7 @@ const ModernManageCheckouts = () => {
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-1.5">
                                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                                 </svg>
-                                <span className="font-bold">MANAGE BOOK</span>
+                                <span className="font-bold">{t('admin.manageCheckouts.manageBook')}</span>
                               </button>
                             </div>
                           )}

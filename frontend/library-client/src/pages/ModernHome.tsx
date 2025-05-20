@@ -4,9 +4,11 @@ import { useAuth } from '../context/AuthContext.js';
 import { ClockIcon, UserGroupIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 import { bookService } from '../api/bookService.js';
 import { Book } from '../types/book.js';
+import { useTranslation } from 'react-i18next';
 
 const ModernHome = () => {
   const { isAuthenticated, isAdmin } = useAuth();
+  const { t } = useTranslation();
   const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +43,7 @@ const ModernHome = () => {
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?q=80&w=2000&auto=format&fit=crop"
-            alt="Modern Library"
+            alt={t('home.heroImageAlt')}
             className="w-full h-full object-cover"
           />
         </div>
@@ -49,17 +51,17 @@ const ModernHome = () => {
         <div className="container-custom relative z-20 mt-16">
           <div className="max-w-2xl">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-heading font-bold text-white mb-6 leading-tight">
-              Discover Your Next <span className="text-accent-400">Great Read</span>
+              {t('home.title')} <span className="text-accent-400">{t('home.subtitle')}</span>
             </h1>
             <p className="text-xl text-white/90 mb-8 leading-relaxed">
-              Browse thousands of books, manage your personal library, and discover new authors and genres all in one place.
+              {t('home.description')}
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
                 to="/books"
                 className="btn btn-primary group"
               >
-                Browse Collection
+                {t('home.browseCollection')}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
@@ -70,7 +72,7 @@ const ModernHome = () => {
                   to="/register"
                   className="btn btn-secondary"
                 >
-                  Join Library
+                  {t('home.joinLibrary')}
                 </Link>
               )}
             </div>
@@ -86,7 +88,7 @@ const ModernHome = () => {
               <img src="/burrito_icon_plain.png" alt="Universidad de WSBurrito Logo" className="w-12 h-12 text-primary-600 mr-4 rounded-full object-cover" />
               <div>
                 <div className="text-3xl font-bold text-neutral-900">10,000+</div>
-                <div className="text-neutral-600">Books Available</div>
+                <div className="text-neutral-600">{t('home.quickStats.availableBooks')}</div>
               </div>
             </div>
             
@@ -94,7 +96,7 @@ const ModernHome = () => {
               <UserGroupIcon className="w-12 h-12 text-primary-600 mr-4" />
               <div>
                 <div className="text-3xl font-bold text-neutral-900">2,500+</div>
-                <div className="text-neutral-600">Active Members</div>
+                <div className="text-neutral-600">{t('home.quickStats.members')}</div>
               </div>
             </div>
             

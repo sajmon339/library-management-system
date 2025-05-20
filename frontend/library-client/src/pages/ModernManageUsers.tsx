@@ -5,8 +5,13 @@ import type { User, RegisterUserDto } from '../types/user';
 import { PencilIcon, TrashIcon, UserCircleIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useLocation } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
+import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../utils/usePageTitle.js';
 
 const ModernManageUsers = () => {
+  const { t, i18n } = useTranslation();
+  usePageTitle(t('admin.manageUsers.title'));
+  
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const shouldShowAddForm = queryParams.get('add') === 'true';
@@ -35,7 +40,7 @@ const ModernManageUsers = () => {
       setUsers(data);
       setError(null);
     } catch (err) {
-      setError('Failed to load users. Please try again later.');
+      setError(t('admin.manageUsers.failedToLoad'));
       console.error('Error fetching users:', err);
     } finally {
       setLoading(false);
@@ -54,13 +59,13 @@ const ModernManageUsers = () => {
       setSelectedUserId(null);
       setError(null);
     } catch (err) {
-      setError('Failed to update user role. Please try again.');
+      setError(t('admin.manageUsers.failedToUpdate'));
       console.error('Error updating user role:', err);
     }
   };
   
   const handleDeleteUser = async (userId: number) => {
-    if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+    if (window.confirm(t('admin.manageUsers.confirmDelete'))) {
       try {
         await userService.deleteUser(userId);
         
@@ -69,7 +74,7 @@ const ModernManageUsers = () => {
         
         setError(null);
       } catch (err) {
-        setError('Failed to delete user. Please try again.');
+        setError(t('admin.manageUsers.failedToDelete'));
         console.error('Error deleting user:', err);
       }
     }
@@ -77,7 +82,7 @@ const ModernManageUsers = () => {
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(i18n.language, {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -90,10 +95,10 @@ const ModernManageUsers = () => {
     
     // Validation
     const errors: string[] = [];
-    if (!newUserForm.email) errors.push('Email is required');
-    if (!newUserForm.password) errors.push('Password is required');
+    if (!newUserForm.email) errors.push(t('admin.manageUsers.validation.emailRequired'));
+    if (!newUserForm.password) errors.push(t('admin.manageUsers.validation.passwordRequired'));
     if (newUserForm.password !== newUserForm.confirmPassword) {
-      errors.push('Passwords do not match');
+      errors.push(t('admin.manageUsers.validation.passwordsMismatch'));
     }
     
     if (errors.length > 0) {
@@ -122,7 +127,7 @@ const ModernManageUsers = () => {
       if (err.response?.data) {
         setFormErrors([err.response.data]);
       } else {
-        setFormErrors(['Failed to create user. Please try again.']);
+        setFormErrors([t('admin.manageUsers.failedToCreate')]);
       }
     }
   };
@@ -154,10 +159,10 @@ const ModernManageUsers = () => {
         <div className="mb-8 flex flex-wrap items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 dark:text-burrito-beige mb-2">
-              Manage Users
+              {t('admin.manageUsers.title')}
             </h1>
             <p className="auto-theme-text">
-              View, edit roles, and manage library users
+              {t('admin.manageUsers.subtitle')}
             </p>
           </div>
           
@@ -167,7 +172,7 @@ const ModernManageUsers = () => {
               className="btn btn-primary flex items-center"
             >
               <PlusIcon className="h-5 w-5 mr-2" />
-              Add New User
+              {t('admin.manageUsers.addUser')}
             </button>
           </div>
         </div>
@@ -209,7 +214,7 @@ const ModernManageUsers = () => {
                       as="h3"
                       className="text-lg font-medium leading-6 text-gray-900"
                     >
-                      Add New User
+                      {t('admin.manageUsers.addUser')}
                     </Dialog.Title>
                     
                     <div className="mt-4">
@@ -226,7 +231,7 @@ const ModernManageUsers = () => {
                         
                         <div className="mb-4">
                           <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">
-                            Email Address
+                            {t('admin.manageUsers.emailAddress')}
                           </label>
                           <input
                             type="email"
@@ -235,13 +240,13 @@ const ModernManageUsers = () => {
                             value={newUserForm.email}
                             onChange={handleFormChange}
                             className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                            placeholder="user@example.com"
+                            placeholder={t('admin.manageUsers.emailPlaceholder')}
                           />
                         </div>
                         
                         <div className="mb-4">
                           <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">
-                            Password
+                            {t('admin.manageUsers.password')}
                           </label>
                           <input
                             type="password"
@@ -255,7 +260,7 @@ const ModernManageUsers = () => {
                         
                         <div className="mb-4">
                           <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-1">
-                            Confirm Password
+                            {t('admin.manageUsers.confirmPassword')}
                           </label>
                           <input
                             type="password"
@@ -273,13 +278,13 @@ const ModernManageUsers = () => {
                             onClick={closeModal}
                             className="inline-flex justify-center rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                           >
-                            Cancel
+                            {t('common.cancel')}
                           </button>
                           <button
                             type="submit"
                             className="inline-flex justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                           >
-                            Create User
+                            {t('admin.manageUsers.createUser')}
                           </button>
                         </div>
                       </form>
@@ -297,19 +302,19 @@ const ModernManageUsers = () => {
               <thead className="bg-neutral-100 dark:bg-burrito-dark-surface">
                 <tr>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    User
+                    {t('admin.manageUsers.user')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Email
+                    {t('admin.manageUsers.email')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Role
+                    {t('admin.manageUsers.role')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Member Since
+                    {t('admin.manageUsers.memberSince')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Actions
+                    {t('common.actions')}
                   </th>
                 </tr>
               </thead>
@@ -326,7 +331,7 @@ const ModernManageUsers = () => {
                 ) : users.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-6 py-12 text-center text-neutral-500">
-                      No users found.
+                      {t('admin.manageUsers.noUsersFound')}
                     </td>
                   </tr>
                 ) : (
@@ -396,14 +401,14 @@ const ModernManageUsers = () => {
                               setSelectedRole(user.role);
                             }}
                             className="text-primary-600 hover:text-primary-900 p-1"
-                            title="Edit role"
+                            title={t('admin.manageUsers.editRole')}
                           >
                             <PencilIcon className="h-5 w-5" />
                           </button>
                           <button
                             onClick={() => handleDeleteUser(user.id)}
                             className="text-red-600 hover:text-red-900 p-1"
-                            title="Delete user"
+                            title={t('admin.manageUsers.deleteUser')}
                             disabled={user.role === UserRole.Admin}
                           >
                             <TrashIcon className={`h-5 w-5 ${user.role === UserRole.Admin ? 'opacity-50 cursor-not-allowed' : ''}`} />

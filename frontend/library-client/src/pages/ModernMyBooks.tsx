@@ -11,8 +11,11 @@ import {
   ClockIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../utils/usePageTitle.js';
 
 const ModernMyBooks = () => {
+  const { t } = useTranslation();
   const [checkOuts, setCheckOuts] = useState<CheckOut[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,6 +23,9 @@ const ModernMyBooks = () => {
   const [actionSuccess, setActionSuccess] = useState<{id: number, action: string} | null>(null);
   const [selectedCheckOut, setSelectedCheckOut] = useState<CheckOut | null>(null);
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  
+  // Set page title
+  usePageTitle(t('myBooks.title'));
   
   useEffect(() => {
     fetchCheckOuts();

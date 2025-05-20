@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext.js';
 import { Book, Genre } from '../types/book.js';
 import { bookService } from '../api/bookService.js';
 import { MagnifyingGlassIcon, FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../utils/usePageTitle.js';
 
 const ModernBooks = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -16,6 +18,10 @@ const ModernBooks = () => {
 
   const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
+  
+  // Set page title
+  usePageTitle(t('books.title'));
 
   // Get book data
   useEffect(() => {
@@ -26,7 +32,7 @@ const ModernBooks = () => {
         setFilteredBooks(data);
         setLoading(false);
       } catch (err) {
-        setError('Error fetching books. Please try again later.');
+        setError(t('errors.serverError'));
         setLoading(false);
       }
     };
@@ -95,10 +101,10 @@ const ModernBooks = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 dark:text-burrito-beige mb-2">
-              Book Catalog
+              {t('books.title')}
             </h1>
             <p className="auto-theme-text max-w-2xl">
-              Browse our collection of books across various genres
+              {t('books.subtitle')}
             </p>
           </div>
           <div className="mt-4 sm:mt-0">
@@ -107,7 +113,7 @@ const ModernBooks = () => {
               className="btn auto-theme-card text-neutral-700 dark:text-burrito-dark-text border border-neutral-200 dark:border-burrito-dark-border shadow-sm hover:bg-neutral-50 dark:hover:bg-burrito-burgundy/20"
             >
               <FunnelIcon className="h-5 w-5 mr-2" />
-              Filters
+              {t('books.filters')}
               {selectedGenre && (
                 <span className="ml-1 text-xs bg-primary-100 dark:bg-burrito-burgundy text-primary-700 dark:text-burrito-beige py-0.5 px-2 rounded-full">
                   1
@@ -127,7 +133,7 @@ const ModernBooks = () => {
               type="text"
               value={searchQuery}
               onChange={handleSearchChange}
-              placeholder="Search by title or author..."
+              placeholder={t('books.searchPlaceholder')}
               className="block w-full pl-10 pr-4 py-3 border border-neutral-200 dark:border-burrito-dark-border rounded-lg shadow-sm focus:ring-primary-500 dark:focus:ring-burrito-cheese focus:border-primary-500 dark:focus:border-burrito-cheese dark:bg-burrito-dark-surface dark:text-burrito-dark-text dark:placeholder-burrito-gray/50"
             />
           </div>
@@ -136,21 +142,31 @@ const ModernBooks = () => {
           {showFilters && (
             <div className="auto-theme-card rounded-xl shadow-soft p-6 mb-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-medium text-neutral-900 dark:text-burrito-beige">Filters</h3>
+                <h3 className="font-medium text-neutral-900 dark:text-burrito-beige">{t('books.filters')}</h3>
                 {selectedGenre && (
                   <button 
                     onClick={() => handleGenreSelect(null)}
                     className="text-sm text-primary-600 dark:text-burrito-cheese hover:text-primary-700 dark:hover:text-burrito-beige flex items-center"
                   >
-                    Clear filters
+                    {t('books.clearFilters')}
                     <XMarkIcon className="h-4 w-4 ml-1" />
                   </button>
                 )}
               </div>
               
               <div>
-                <h4 className="text-sm font-medium auto-theme-text mb-2">Genre</h4>
+                <h4 className="text-sm font-medium auto-theme-text mb-2">{t('books.genre')}</h4>
                 <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => handleGenreSelect(null)}
+                    className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
+                      selectedGenre === null
+                        ? 'bg-primary-100 dark:bg-burrito-burgundy text-primary-700 dark:text-burrito-beige font-medium'
+                        : 'bg-neutral-100 dark:bg-burrito-dark-surface/70 text-neutral-700 dark:text-burrito-dark-text hover:bg-neutral-200 dark:hover:bg-burrito-burgundy/50'
+                    }`}
+                  >
+                    {t('books.allGenres')}
+                  </button>
                   {genreList.map((genre) => (
                     <button
                       key={genre}
@@ -177,6 +193,7 @@ const ModernBooks = () => {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
+            <span className="ml-2 text-primary-600 dark:text-burrito-cheese">{t('books.loading')}</span>
           </div>
         ) : error ? (
           <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-6 text-center">
@@ -185,7 +202,7 @@ const ModernBooks = () => {
               onClick={() => window.location.reload()}
               className="mt-4 btn btn-primary"
             >
-              Try Again
+              {t('common.tryAgain')}
             </button>
           </div>
         ) : filteredBooks.length === 0 ? (

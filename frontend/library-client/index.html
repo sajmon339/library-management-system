@@ -8,8 +8,9 @@
     <meta name="color-scheme" content="light dark" />
     <link rel="stylesheet" href="/themes/normal/burrito-theme.css" />
     <title>Universidad de WSBurrito</title>
+    <!-- Title will be updated dynamically by i18n -->
     <script>
-      // Check for dark mode preference on page load
+      // Check for dark mode preference and language on page load
       (function() {
         const savedTheme = localStorage.getItem('theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -23,6 +24,12 @@
           document.documentElement.classList.add('light');
           document.documentElement.style.setProperty('--color-bg', '#FFE4B2');
           document.documentElement.style.setProperty('--color-text', '#50443A');
+        }
+        
+        // Set language from localStorage if available
+        const savedLanguage = localStorage.getItem('i18nextLng');
+        if (savedLanguage) {
+          document.documentElement.setAttribute('lang', savedLanguage);
         }
       })();
     </script>

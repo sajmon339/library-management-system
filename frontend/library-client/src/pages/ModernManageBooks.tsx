@@ -3,8 +3,14 @@ import { bookService } from '../api/bookService';
 import { Genre } from '../types/book';
 import type { Book, CreateBookDto, UpdateBookDto } from '../types/book';
 import { PlusIcon, TrashIcon, PencilIcon, CheckIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../utils/usePageTitle';
 
 const ModernManageBooks = () => {
+  const { t, i18n } = useTranslation();
+  // Set the page title based on the current language
+  usePageTitle(t('admin.manageBooks.title'));
+  
   // Books state
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +59,7 @@ const ModernManageBooks = () => {
       setBooks(data);
       setError(null);
     } catch (err) {
-      setError('Failed to load books. Please try again later.');
+      setError(t('common.failedToLoad'));
       console.error('Error fetching books:', err);
     } finally {
       setLoading(false);
@@ -98,7 +104,7 @@ const ModernManageBooks = () => {
       setIsAddFormVisible(false);
       
     } catch (err) {
-      setFormErrors(['Failed to add book. Please try again.']);
+      setFormErrors([t('admin.manageBooks.failedToAdd')]);
       console.error('Error adding book:', err);
     }
   };
@@ -143,18 +149,18 @@ const ModernManageBooks = () => {
       setIsEditFormVisible(false);
       
     } catch (err) {
-      setFormErrors(['Failed to update book. Please try again.']);
+      setFormErrors([t('admin.manageBooks.failedToUpdate')]);
       console.error('Error updating book:', err);
     }
   };
   
   const handleDeleteBook = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this book?')) {
+    if (window.confirm(t('admin.manageBooks.confirmDelete'))) {
       try {
         await bookService.deleteBook(id);
         await fetchBooks();
       } catch (err) {
-        setError('Failed to delete book. Please try again.');
+        setError(t('admin.manageBooks.failedToDelete'));
         console.error('Error deleting book:', err);
       }
     }
@@ -205,13 +211,13 @@ const ModernManageBooks = () => {
     
     // Check if file is an image
     if (!file.type.match('image.*')) {
-      setFormErrors(['Please select an image file (jpeg, png, etc.)']);
+      setFormErrors([t('admin.manageBooks.imageTypeWarning')]);
       return;
     }
     
     // Check file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setFormErrors(['Image file size should be less than 5MB']);
+      setFormErrors([t('admin.manageBooks.imageSizeWarning')]);
       return;
     }
     
@@ -236,17 +242,17 @@ const ModernManageBooks = () => {
   const validateBookForm = (book: CreateBookDto | UpdateBookDto) => {
     const errors: string[] = [];
     
-    if (!book.title.trim()) errors.push('Title is required');
-    if (!book.author.trim()) errors.push('Author is required');
-    if (!book.publisher.trim()) errors.push('Publisher is required');
+    if (!book.title.trim()) errors.push(t('admin.manageBooks.validation.titleRequired'));
+    if (!book.author.trim()) errors.push(t('admin.manageBooks.validation.authorRequired'));
+    if (!book.publisher.trim()) errors.push(t('admin.manageBooks.validation.publisherRequired'));
     
     const currentYear = new Date().getFullYear();
     if (book.publishedYear < 1000 || book.publishedYear > currentYear) {
-      errors.push(`Publication year must be between 1000 and ${currentYear}`);
+      errors.push(t('admin.manageBooks.yearValidation', { currentYear }));
     }
     
     if ('totalCopies' in book && book.totalCopies < 1) {
-      errors.push('Number of copies must be at least 1');
+      errors.push(t('admin.manageBooks.validation.copiesMinimum'));
     }
     
     return errors;
@@ -254,7 +260,7 @@ const ModernManageBooks = () => {
   
   const renderAddBookForm = () => (
     <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-      <h2 className="text-xl font-semibold text-neutral-900 mb-6">Add New Book</h2>
+      <h2 className="text-xl font-semibold text-neutral-900 mb-6">{t('admin.manageBooks.addBook')}</h2>
       
       {formErrors.length > 0 && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
@@ -270,7 +276,7 @@ const ModernManageBooks = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-neutral-700 mb-1">
-              Title *
+              {t('admin.manageBooks.bookTitle')} *
             </label>
             <input
               type="text"
@@ -284,7 +290,7 @@ const ModernManageBooks = () => {
           
           <div>
             <label htmlFor="author" className="block text-sm font-medium text-neutral-700 mb-1">
-              Author *
+              {t('admin.manageBooks.author')} *
             </label>
             <input
               type="text"
@@ -298,7 +304,7 @@ const ModernManageBooks = () => {
           
           <div>
             <label htmlFor="publishedYear" className="block text-sm font-medium text-neutral-700 mb-1">
-              Publication Year *
+              {t('admin.manageBooks.publishedYear')} *
             </label>
             <input
               type="number"
@@ -314,7 +320,7 @@ const ModernManageBooks = () => {
           
           <div>
             <label htmlFor="publisher" className="block text-sm font-medium text-neutral-700 mb-1">
-              Publisher *
+              {t('admin.manageBooks.publisher')} *
             </label>
             <input
               type="text"
@@ -328,7 +334,7 @@ const ModernManageBooks = () => {
           
           <div>
             <label htmlFor="genre" className="block text-sm font-medium text-neutral-700 mb-1">
-              Genre *
+              {t('admin.manageBooks.genre')} *
             </label>
             <select
               id="genre"
@@ -345,7 +351,7 @@ const ModernManageBooks = () => {
           
           <div>
             <label htmlFor="totalCopies" className="block text-sm font-medium text-neutral-700 mb-1">
-              Number of Copies *
+              {t('admin.manageBooks.copies')} *
             </label>
             <input
               type="number"
@@ -360,7 +366,7 @@ const ModernManageBooks = () => {
           
           <div>
             <label htmlFor="catalogNumber" className="block text-sm font-medium text-neutral-700 mb-1">
-              Catalog Number
+              {t('admin.manageBooks.catalogNumber')}
             </label>
             <input
               type="text"
@@ -368,13 +374,13 @@ const ModernManageBooks = () => {
               value={newBook.catalogNumber || ''}
               onChange={(e) => setNewBook({...newBook, catalogNumber: e.target.value})}
               className="w-full px-4 py-2 border border-neutral-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
-              placeholder="Auto-generated if left empty"
+              placeholder={t('admin.manageBooks.catalogNumberPlaceholder')}
             />
           </div>
           
           <div className="md:col-span-2">
             <label htmlFor="coverImage" className="block text-sm font-medium text-neutral-700 mb-1">
-              Cover Image
+              {t('admin.manageBooks.coverImage')}
             </label>
             <div className="mt-1 flex items-center">
               <input
@@ -391,7 +397,7 @@ const ModernManageBooks = () => {
                   onClick={() => fileInputRef.current?.click()}
                   className="px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                 >
-                  Choose Image
+                  {t('admin.manageBooks.chooseImage')}
                 </button>
                 {coverImage && (
                   <button
@@ -399,7 +405,7 @@ const ModernManageBooks = () => {
                     onClick={resetFileInput}
                     className="px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                   >
-                    Clear
+                    {t('common.clear')}
                   </button>
                 )}
               </div>
@@ -415,7 +421,7 @@ const ModernManageBooks = () => {
                 <div className="w-32 h-48 border rounded-md overflow-hidden">
                   <img 
                     src={imagePreview} 
-                    alt="Cover preview" 
+                    alt={t('admin.manageBooks.coverImage')} 
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -431,7 +437,7 @@ const ModernManageBooks = () => {
                   ></div>
                 </div>
                 <p className="text-xs text-neutral-500 mt-1">
-                  Uploading: {uploadProgress}%
+                  {t('admin.manageBooks.uploading')}: {uploadProgress}%
                 </p>
               </div>
             )}
@@ -448,25 +454,24 @@ const ModernManageBooks = () => {
             }}
             className="px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             type="submit"
             className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
           >
-            Add Book
+            {t('admin.manageBooks.addBook')}
           </button>
         </div>
       </form>
     </div>
   );
-  
-  const renderEditBookForm = () => {
+   const renderEditBookForm = () => {
     if (!selectedBookId) return null;
     
     return (
       <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-        <h2 className="text-xl font-semibold text-neutral-900 mb-6">Edit Book</h2>
+        <h2 className="text-xl font-semibold text-neutral-900 mb-6">{t('admin.manageBooks.editBook')}</h2>
         
         {formErrors.length > 0 && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
@@ -482,7 +487,7 @@ const ModernManageBooks = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="edit-title" className="block text-sm font-medium text-neutral-700 mb-1">
-                Title *
+                {t('admin.manageBooks.bookTitle')} *
               </label>
               <input
                 type="text"
@@ -496,7 +501,7 @@ const ModernManageBooks = () => {
             
             <div>
               <label htmlFor="edit-author" className="block text-sm font-medium text-neutral-700 mb-1">
-                Author *
+                {t('admin.manageBooks.author')} *
               </label>
               <input
                 type="text"
@@ -510,7 +515,7 @@ const ModernManageBooks = () => {
             
             <div>
               <label htmlFor="edit-publishedYear" className="block text-sm font-medium text-neutral-700 mb-1">
-                Publication Year *
+                {t('admin.manageBooks.publishedYear')} *
               </label>
               <input
                 type="number"
@@ -526,7 +531,7 @@ const ModernManageBooks = () => {
             
             <div>
               <label htmlFor="edit-publisher" className="block text-sm font-medium text-neutral-700 mb-1">
-                Publisher *
+                {t('admin.manageBooks.publisher')} *
               </label>
               <input
                 type="text"
@@ -540,7 +545,7 @@ const ModernManageBooks = () => {
             
             <div>
               <label htmlFor="edit-genre" className="block text-sm font-medium text-neutral-700 mb-1">
-                Genre *
+                {t('admin.manageBooks.genre')} *
               </label>
               <select
                 id="edit-genre"
@@ -557,7 +562,7 @@ const ModernManageBooks = () => {
             
             <div className="md:col-span-2">
               <label htmlFor="edit-coverImage" className="block text-sm font-medium text-neutral-700 mb-1">
-                Cover Image
+                {t('admin.manageBooks.coverImage')}
               </label>
               <div className="mt-1 flex items-center">
                 <input
@@ -574,7 +579,7 @@ const ModernManageBooks = () => {
                     onClick={() => fileInputRef.current?.click()}
                     className="px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                   >
-                    Choose New Image
+                    {t('admin.manageBooks.chooseNewImage')}
                   </button>
                   {coverImage && (
                     <button
@@ -582,7 +587,7 @@ const ModernManageBooks = () => {
                       onClick={resetFileInput}
                       className="px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                     >
-                      Clear
+                      {t('common.clear')}
                     </button>
                   )}
                 </div>
@@ -598,7 +603,7 @@ const ModernManageBooks = () => {
                   <div className="w-32 h-48 border rounded-md overflow-hidden">
                     <img 
                       src={imagePreview} 
-                      alt="Cover preview" 
+                      alt={t('admin.manageBooks.coverImage')}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -614,7 +619,7 @@ const ModernManageBooks = () => {
                     ></div>
                   </div>
                   <p className="text-xs text-neutral-500 mt-1">
-                    Uploading: {uploadProgress}%
+                    {t('admin.manageBooks.uploading')}: {uploadProgress}%
                   </p>
                 </div>
               )}
@@ -632,13 +637,13 @@ const ModernManageBooks = () => {
               }}
               className="px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
-              Save Changes
+              {t('common.saveChanges')}
             </button>
           </div>
         </form>
@@ -652,10 +657,10 @@ const ModernManageBooks = () => {
         <div className="mb-8 flex flex-wrap items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-heading font-bold text-neutral-900 mb-2">
-              Manage Books
+              {t('admin.manageBooks.title')}
             </h1>
             <p className="text-neutral-600">
-              Add, edit, and delete books in your library
+              {t('admin.manageBooks.subtitle')}
             </p>
           </div>
           
@@ -672,12 +677,12 @@ const ModernManageBooks = () => {
               {isAddFormVisible ? (
                 <>
                   <XMarkIcon className="h-5 w-5 mr-2" />
-                  Cancel
+                  {t('common.cancel')}
                 </>
               ) : (
                 <>
                   <PlusIcon className="h-5 w-5 mr-2" />
-                  Add New Book
+                  {t('admin.manageBooks.addBook')}
                 </>
               )}
             </button>
@@ -699,25 +704,25 @@ const ModernManageBooks = () => {
               <thead className="bg-neutral-100 dark:bg-burrito-dark-surface">
                 <tr>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Cover
+                    {t('common.cover')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Title
+                    {t('admin.manageBooks.bookTitle')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Author
+                    {t('admin.manageBooks.author')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Year
+                    {t('books.publishedYear')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Genre
+                    {t('admin.manageBooks.genre')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Copies
+                    {t('books.copies')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-neutral-500 dark:text-burrito-gray uppercase tracking-wider">
-                    Actions
+                    {t('common.actions')}
                   </th>
                 </tr>
               </thead>
@@ -734,7 +739,7 @@ const ModernManageBooks = () => {
                 ) : books.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center text-neutral-500">
-                      No books found. Add your first book to get started.
+                      {t('admin.manageBooks.noBooksFound')}
                     </td>
                   </tr>
                 ) : (
@@ -776,21 +781,21 @@ const ModernManageBooks = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-neutral-900">{book.availableCopies} / {book.totalCopies}</div>
-                        <div className="text-xs text-neutral-500">Available / Total</div>
+                        <div className="text-xs text-neutral-500">{t('admin.manageBooks.available')} / {t('admin.manageBooks.total')}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <div className="flex justify-end space-x-2">
                           <button
                             onClick={() => handleEditClick(book)}
                             className="text-primary-600 hover:text-primary-900 p-1"
-                            title="Edit book"
+                            title={t('common.edit')}
                           >
                             <PencilIcon className="h-5 w-5" />
                           </button>
                           <button
                             onClick={() => handleDeleteBook(book.id)}
                             className="text-red-600 hover:text-red-900 p-1"
-                            title="Delete book"
+                            title={t('common.delete')}
                           >
                             <TrashIcon className="h-5 w-5" />
                           </button>

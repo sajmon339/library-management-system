@@ -1,9 +1,11 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon, UserIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext.js';
 import { useTheme } from '../context/ThemeContext.js';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -12,12 +14,74 @@ function classNames(...classes: string[]) {
 const ModernNavbar = () => {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [hasDarkBackground, setHasDarkBackground] = useState(false);
   
   const isDarkMode = theme === 'dark';
+
+  // Generate dynamic styles based on theme and scroll state
+  const styles = useMemo(() => {
+    return {
+      navbar: `fixed w-full z-50 transition-all duration-300 ${
+        scrolled 
+          ? isDarkMode 
+            ? 'bg-burrito-dark-surface text-burrito-dark-text shadow-md py-1' 
+            : 'bg-burrito-light-surface shadow-md py-1'
+          : hasDarkBackground 
+            ? 'bg-transparent pt-3' 
+            : isDarkMode 
+              ? 'bg-burrito-dark-bg text-burrito-dark-text pt-3' 
+              : 'bg-burrito-brown pt-3'
+      }`,
+      menuButton: `relative inline-flex items-center justify-center rounded-md p-2 ${
+        scrolled 
+          ? isDarkMode
+            ? 'text-burrito-gray hover:bg-burrito-charcoal'
+            : 'text-burrito-brown hover:bg-burrito-beige' 
+          : 'text-white hover:bg-white/10'
+      } focus:outline-none focus:ring-2 focus:ring-inset focus:ring-burrito-brown`,
+      logoText: `flex items-center font-heading font-bold ${
+        scrolled 
+          ? 'text-burrito-brown' 
+          : 'text-white'
+      }`,
+      themeToggle: `flex items-center justify-center p-2 rounded-full transition-colors ${
+        scrolled 
+          ? isDarkMode
+            ? 'text-burrito-cheese hover:bg-burrito-burgundy/20'
+            : 'text-burrito-brown hover:bg-burrito-beige' 
+          : 'text-white hover:bg-white/10'
+      }`,
+      languageSwitcherClass: `${
+        scrolled 
+          ? isDarkMode
+            ? 'text-burrito-cheese hover:bg-burrito-burgundy/20'
+            : 'text-burrito-brown hover:bg-burrito-beige' 
+          : 'text-white hover:bg-white/10'
+      }`,
+      loginLink: `text-sm font-medium ${
+        scrolled 
+          ? isDarkMode
+            ? 'text-burrito-cheese hover:text-burrito-beige'
+            : 'text-burrito-brown hover:text-burrito-burgundy' 
+          : 'text-white hover:text-white/80'
+      }`,
+      mobileMenu: `sm:hidden ${isDarkMode ? 'bg-burrito-charcoal shadow-lg' : 'bg-white shadow-lg'}`,
+      mobileThemeToggle: `flex items-center justify-center p-3 rounded-md ${
+        isDarkMode
+          ? 'bg-burrito-burgundy/20 text-burrito-cheese'
+          : 'bg-burrito-beige text-burrito-brown'
+      }`,
+      mobileLangSwitcher: `p-3 rounded-md ${
+        isDarkMode
+          ? 'bg-burrito-burgundy/20 text-burrito-cheese'
+          : 'bg-burrito-beige text-burrito-brown'
+      }`
+    };
+  }, [scrolled, isDarkMode, hasDarkBackground]);
 
   // Detect if the page has a dark background or hero image
   useEffect(() => {
@@ -70,21 +134,21 @@ const ModernNavbar = () => {
 
   // Navigation links that are always visible
   const publicNavigation = [
-    { name: 'Home', href: '/', current: location.pathname === '/' },
-    { name: 'Books', href: '/books', current: location.pathname === '/books' },
+    { name: t('nav.home'), href: '/', current: location.pathname === '/' },
+    { name: t('nav.books'), href: '/books', current: location.pathname === '/books' },
   ];
   
   // Navigation links for logged in users
   const userNavigation = [
-    { name: 'My Books', href: '/my-books', current: location.pathname === '/my-books' },
+    { name: t('nav.myBooks'), href: '/my-books', current: location.pathname === '/my-books' },
   ];
   
   // Navigation links for admin users
   const adminNavigation = [
-    { name: 'Dashboard', href: '/admin', current: location.pathname === '/admin' },
-    { name: 'Manage Books', href: '/admin/books', current: location.pathname === '/admin/books' },
-    { name: 'Manage Users', href: '/admin/users', current: location.pathname === '/admin/users' },
-    { name: 'Check-outs', href: '/admin/checkouts', current: location.pathname === '/admin/checkouts' },
+    { name: t('nav.adminDashboard'), href: '/admin', current: location.pathname === '/admin' },
+    { name: t('nav.manageBooks'), href: '/admin/books', current: location.pathname === '/admin/books' },
+    { name: t('nav.manageUsers'), href: '/admin/users', current: location.pathname === '/admin/users' },
+    { name: t('nav.checkouts'), href: '/admin/checkouts', current: location.pathname === '/admin/checkouts' },
   ];
 
   // Get navigation based on user role
@@ -96,35 +160,19 @@ const ModernNavbar = () => {
 
   // User menu items
   const userMenuItems = [
-    { name: 'Your Profile', href: '/profile', icon: <UserIcon className="h-5 w-5 mr-2" /> },
-    { name: 'Change Password', href: '/change-password', icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-2"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg> },
+    { name: t('nav.profile'), href: '/profile', icon: <UserIcon className="h-5 w-5 mr-2" /> },
+    { name: t('nav.changePassword'), href: '/change-password', icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-2"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg> },
   ];
 
-  return (      <Disclosure as="nav" className={`fixed w-full z-50 transition-all duration-300 ${
-    scrolled 
-      ? isDarkMode 
-        ? 'bg-burrito-dark-surface text-burrito-dark-text shadow-md py-1' 
-        : 'bg-burrito-light-surface shadow-md py-1'
-      : hasDarkBackground 
-        ? 'bg-transparent pt-3' 
-        : isDarkMode 
-          ? 'bg-burrito-dark-bg text-burrito-dark-text pt-3' 
-          : 'bg-burrito-brown pt-3'
-  }`}>
+  return (      <Disclosure as="nav" className={styles.navbar}>
       {({ open }) => (
         <>
           <div className="container-custom">
             <div className="relative flex items-center justify-between h-16">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button*/}
-                <Disclosure.Button className={`relative inline-flex items-center justify-center rounded-md p-2 ${
-                  scrolled 
-                    ? isDarkMode
-                      ? 'text-burrito-gray hover:bg-burrito-charcoal'
-                      : 'text-burrito-brown hover:bg-burrito-beige' 
-                    : 'text-white hover:bg-white/10'
-                } focus:outline-none focus:ring-2 focus:ring-inset focus:ring-burrito-brown`}>
-                  <span className="sr-only">Open main menu</span>
+                <Disclosure.Button className={styles.menuButton}>
+                  <span className="sr-only">{t('common.toggleMenu')}</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
                   ) : (
@@ -135,11 +183,7 @@ const ModernNavbar = () => {
               
               <div className="flex flex-1 items-center justify-between sm:justify-start">
                 <div className="flex items-center">
-                  <Link to="/" className={`flex items-center font-heading font-bold ${
-                    scrolled 
-                      ? 'text-burrito-brown' 
-                      : 'text-white'
-                  }`}>
+                  <Link to="/" className={styles.logoText}>
                     <img 
                       src={isDarkMode ? "/themes/dark/burrito_full_dark.png" : "/burrito_icon_plain.png"} 
                       alt="Universidad de WSBurrito Logo" 
@@ -186,14 +230,8 @@ const ModernNavbar = () => {
                 
                 <button 
                   onClick={toggleTheme} 
-                  className={`flex items-center justify-center p-2 rounded-full transition-colors ${
-                    scrolled 
-                      ? isDarkMode
-                        ? 'text-burrito-cheese hover:bg-burrito-burgundy/20'
-                        : 'text-burrito-brown hover:bg-burrito-beige' 
-                      : 'text-white hover:bg-white/10'
-                  }`}
-                  aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                  className={styles.themeToggle}
+                  aria-label={isDarkMode ? t('nav.switchToLightMode') : t('nav.switchToDarkMode')}
                 >
                   {isDarkMode ? (
                     <SunIcon className="h-5 w-5" />
@@ -201,6 +239,10 @@ const ModernNavbar = () => {
                     <MoonIcon className="h-5 w-5" />
                   )}
                 </button>
+                
+                <LanguageSwitcher 
+                  buttonClassName={styles.languageSwitcherClass}
+                />
                 
                 {isAuthenticated ? (
                   <Menu as="div" className="relative">
@@ -235,7 +277,7 @@ const ModernNavbar = () => {
                           : 'bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'
                       }`}>
                         <div className={`px-4 py-3 ${isDarkMode ? 'border-b border-burrito-burgundy' : 'border-b border-neutral-100'}`}>
-                          <p className={`text-sm ${isDarkMode ? 'text-burrito-gray' : 'text-neutral-500'}`}>Signed in as</p>
+                          <p className={`text-sm ${isDarkMode ? 'text-burrito-gray' : 'text-neutral-500'}`}>{t('nav.signedInAs')}</p>
                           <p className={`text-sm font-medium ${isDarkMode ? 'text-burrito-beige' : 'text-neutral-900'} truncate`}>{user?.userName}</p>
                         </div>
                         
@@ -278,7 +320,7 @@ const ModernNavbar = () => {
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-2">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                               </svg>
-                              Sign out
+                              {t('nav.logout')}
                             </button>
                           )}
                         </Menu.Item>
@@ -289,21 +331,15 @@ const ModernNavbar = () => {
                   <div className="flex items-center gap-3">
                     <Link
                       to="/login"
-                      className={`text-sm font-medium ${
-                        scrolled 
-                          ? isDarkMode
-                            ? 'text-burrito-cheese hover:text-burrito-beige'
-                            : 'text-burrito-brown hover:text-burrito-burgundy' 
-                          : 'text-white hover:text-white/80'
-                      }`}
+                      className={styles.loginLink}
                     >
-                      Login
+                      {t('nav.login')}
                     </Link>
                     <Link
                       to="/register"
                       className="btn btn-primary py-2 px-4 text-sm"
                     >
-                      Register
+                      {t('nav.register')}
                     </Link>
                   </div>
                 )}
@@ -311,7 +347,7 @@ const ModernNavbar = () => {
             </div>
           </div>
 
-          <Disclosure.Panel className={`sm:hidden ${isDarkMode ? 'bg-burrito-charcoal shadow-lg' : 'bg-white shadow-lg'}`}>
+          <Disclosure.Panel className={styles.mobileMenu}>
             <div className="space-y-1 px-2 pb-3 pt-2">
               {navigation.map((item) => (
                 <Disclosure.Button
@@ -333,6 +369,19 @@ const ModernNavbar = () => {
                   {item.name}
                 </Disclosure.Button>
               ))}
+              <div className="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4 flex items-center justify-around">
+                <button 
+                  onClick={toggleTheme} 
+                  className={styles.mobileThemeToggle}
+                >
+                  {isDarkMode ? <SunIcon className="h-5 w-5 mr-2" /> : <MoonIcon className="h-5 w-5 mr-2" />}
+                  {isDarkMode ? t('nav.lightMode') : t('nav.darkMode')}
+                </button>
+                <LanguageSwitcher 
+                  buttonClassName={styles.mobileLangSwitcher}
+                  dropdownClassName="w-full" 
+                />
+              </div>
             </div>
           </Disclosure.Panel>
         </>
