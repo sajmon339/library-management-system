@@ -46,6 +46,7 @@
     "login": "Login",
     "logout": "Logout",
     "register": "Register",
+    "adminPanel": "Admin Panel",
     "adminDashboard": "Admin Dashboard",
     "manageBooks": "Manage Books",
     "manageUsers": "Manage Users",

@@ -1,6 +1,7 @@
 {
   "app": {
-    "title": "Universidad de WSBurrito"
+    "title": "Universidad de WSBurrito",
+    "shortTitle": "WSBurrito"
   },
   "common": {
     "loading": "Ładowanie...",
@@ -50,6 +51,7 @@
     "login": "Logowanie",
     "logout": "Wyloguj",
     "register": "Rejestracja",
+    "adminPanel": "Panel Zarządzania",
     "adminDashboard": "Panel administratora",
     "manageBooks": "Zarządzaj książkami",
     "manageUsers": "Zarządzaj użytkownikami",

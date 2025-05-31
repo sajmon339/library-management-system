@@ -11,6 +11,14 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
+// Define types for navigation items
+interface NavItem {
+  name: string;
+  href: string;
+  current: boolean;
+  children?: NavItem[];
+}
+
 const ModernNavbar = () => {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -19,6 +27,8 @@ const ModernNavbar = () => {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [hasDarkBackground, setHasDarkBackground] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [adminMenuOpen, setAdminMenuOpen] = useState(location.pathname.startsWith('/admin'));
   
   const isDarkMode = theme === 'dark';
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -48,7 +58,7 @@ const ModernNavbar = () => {
         scrolled 
           ? 'text-burrito-brown' 
           : 'text-white'
-      }`,
+      } whitespace-nowrap`,
       themeToggle: `flex items-center justify-center p-2 rounded-full transition-colors ${
         scrolled 
           ? isDarkMode
@@ -70,7 +80,8 @@ const ModernNavbar = () => {
             : 'text-burrito-brown hover:text-burrito-burgundy' 
           : 'text-white hover:text-white/80'
       }`,
-      mobileMenu: `sm:hidden ${isDarkMode ? 'bg-burrito-charcoal shadow-lg' : 'bg-white shadow-lg'} max-h-[85vh] overflow-y-auto z-50`,
+      mobileMenu: `sm:hidden ${isDarkMode ? 'bg-burrito-charcoal shadow-lg' : 'bg-white shadow-lg'} max-h-[85vh] overflow-y-auto z-50 relative`,
+      mobileMenuOverlay: 'fixed inset-0 bg-black/20 backdrop-blur-sm z-40 sm:hidden',
       mobileThemeToggle: `flex items-center justify-center py-2 px-3 rounded-md ${
         isDarkMode
           ? 'bg-burrito-burgundy/20 text-burrito-cheese'
@@ -128,35 +139,62 @@ const ModernNavbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Track window resize for responsive title display
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Update adminMenuOpen when route changes
+  useEffect(() => {
+    if (location.pathname.startsWith('/admin')) {
+      setAdminMenuOpen(true);
+    }
+  }, [location.pathname]);
+
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
   // Navigation links that are always visible
-  const publicNavigation = [
+  const publicNavigation: NavItem[] = [
     { name: t('nav.home'), href: '/', current: location.pathname === '/' },
     { name: t('nav.books'), href: '/books', current: location.pathname === '/books' },
   ];
   
   // Navigation links for logged in users
-  const userNavigation = [
+  const userNavigation: NavItem[] = [
     { name: t('nav.myBooks'), href: '/my-books', current: location.pathname === '/my-books' },
   ];
   
-  // Navigation links for admin users
-  const adminNavigation = [
+  // Navigation links for admin users (now as children of an Admin Panel)
+  const adminSubmenuItems: NavItem[] = [
     { name: t('nav.adminDashboard'), href: '/admin', current: location.pathname === '/admin' },
     { name: t('nav.manageBooks'), href: '/admin/books', current: location.pathname === '/admin/books' },
     { name: t('nav.manageUsers'), href: '/admin/users', current: location.pathname === '/admin/users' },
     { name: t('nav.checkouts'), href: '/admin/checkouts', current: location.pathname === '/admin/checkouts' },
   ];
+  
+  // Create a single Admin Panel entry for the main nav
+  const adminNavigation: NavItem[] = isAdmin ? [
+    { 
+      name: t('nav.adminPanel'), 
+      href: '#', 
+      current: location.pathname.startsWith('/admin'),
+      children: adminSubmenuItems
+    }
+  ] : [];
 
   // Get navigation based on user role
-  const navigation = [
+  const navigation: NavItem[] = [
     ...publicNavigation,
     ...(isAuthenticated ? userNavigation : []),
-    ...(isAdmin ? adminNavigation : []),
+    ...adminNavigation,
   ];
 
   // User menu items
@@ -166,13 +204,21 @@ const ModernNavbar = () => {
   ];
 
   return (      <Disclosure as="nav" className={styles.navbar}>
-      {({ open }) => (
+      {({ open, close }) => (
         <>
           <div className="container-custom px-3 sm:px-4">
             <div className="relative flex items-center justify-between h-14 sm:h-16">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button*/}
-                <DisclosureButton className={styles.menuButton}>
+                <DisclosureButton 
+                  className={styles.menuButton}
+                  onClick={() => {
+                    if (open) {
+                      // Reset admin menu state when the mobile menu closes
+                      setAdminMenuOpen(false);
+                    }
+                  }}
+                >
                   <span className="sr-only">{t('common.toggleMenu')}</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -182,40 +228,107 @@ const ModernNavbar = () => {
                 </DisclosureButton>
               </div>
               
+              {/* University title in mobile view - centered */}
+              <div className="absolute inset-x-0 top-0 flex justify-center items-center h-full pointer-events-none sm:hidden">
+                {!isAdminRoute && (
+                  <span className={`font-heading font-bold text-base transition-colors ${scrolled ? (isDarkMode ? 'text-burrito-cheese' : 'text-burrito-brown') : 'text-white'}`}>
+                    {t('app.shortTitle')}
+                  </span>
+                )}
+              </div>
+              
               <div className="flex flex-1 items-center justify-between sm:justify-start">
-                <div className="flex-shrink-0 pl-10 sm:pl-0">
-                  <Link to="/" className={styles.logoText}>
+                <div className="flex-shrink-0 pl-10 sm:pl-0 mr-2 sm:mr-4">
+                  <Link to="/" className={`${styles.logoText} flex-nowrap`}>
                     <img 
                       src={isDarkMode ? "/themes/dark/burrito_full_dark.png" : "/burrito_icon_plain.png"} 
                       alt="WSBurrito Logo" 
-                      className="h-9 w-9 sm:h-11 sm:w-11 rounded-full object-cover"
+                      className={`rounded-full object-cover ${isAdmin ? 'h-9 w-9 sm:h-11 sm:w-11' : 'h-8 w-8 sm:h-10 sm:w-10 mr-2'}`}
                     />
+                    {!isAdminRoute && (
+                      <span className={`hidden sm:block text-sm sm:text-base lg:text-lg transition-colors ${scrolled ? (isDarkMode ? 'text-burrito-cheese' : 'text-burrito-brown') : 'text-white'}`}>
+                        {windowWidth < 1024 ? t('app.shortTitle') : t('app.title')}
+                      </span>
+                    )}
                   </Link>
                 </div>
                 
                 <div className="hidden sm:flex sm:ml-6 lg:ml-8 sm:space-x-2 lg:space-x-4 items-center flex-grow justify-center">
                   {navigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={classNames(
-                        item.current 
-                          ? (scrolled 
-                              ? isDarkMode
-                                ? 'text-burrito-cheese border-b-2 border-burrito-cheese'
-                                : 'text-burrito-brown border-b-2 border-burrito-brown' 
-                              : 'text-white border-b-2 border-white')
-                          : (scrolled 
-                              ? isDarkMode
-                                ? 'text-burrito-gray hover:text-burrito-cheese'
-                                : 'text-neutral-600 hover:text-burrito-brown' 
-                              : 'text-white/80 hover:text-white'),
-                        'px-2 lg:px-3 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap'
+                    <div key={item.name} className="relative group">
+                      {item.children ? (
+                        <button
+                          className={classNames(
+                            item.current 
+                              ? (scrolled 
+                                  ? isDarkMode
+                                    ? 'text-burrito-cheese border-b-2 border-burrito-cheese'
+                                    : 'text-burrito-brown border-b-2 border-burrito-brown' 
+                                  : 'text-white border-b-2 border-white')
+                              : (scrolled 
+                                  ? isDarkMode
+                                    ? 'text-burrito-gray hover:text-burrito-cheese'
+                                    : 'text-neutral-600 hover:text-burrito-brown' 
+                                  : 'text-white/80 hover:text-white'),
+                            'px-2 lg:px-3 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap flex items-center gap-1'
+                          )}
+                          aria-haspopup="true"
+                          aria-expanded="false"
+                        >
+                          {item.name}
+                          <svg className="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      ) : (
+                        <Link
+                          to={item.href}
+                          className={classNames(
+                            item.current 
+                              ? (scrolled 
+                                  ? isDarkMode
+                                    ? 'text-burrito-cheese border-b-2 border-burrito-cheese'
+                                    : 'text-burrito-brown border-b-2 border-burrito-brown' 
+                                  : 'text-white border-b-2 border-white')
+                              : (scrolled 
+                                  ? isDarkMode
+                                    ? 'text-burrito-gray hover:text-burrito-cheese'
+                                    : 'text-neutral-600 hover:text-burrito-brown' 
+                                  : 'text-white/80 hover:text-white'),
+                            'px-2 lg:px-3 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap'
+                          )}
+                          aria-current={item.current ? 'page' : undefined}
+                        >
+                          {item.name}
+                        </Link>
                       )}
-                      aria-current={item.current ? 'page' : undefined}
-                    >
-                      {item.name}
-                    </Link>
+                      
+                      {item.children && (
+                        <div className="absolute left-0 mt-0 w-48 origin-top-left bg-white dark:bg-burrito-charcoal rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 invisible group-hover:visible transition-all opacity-0 group-hover:opacity-100 transform translate-y-1 group-hover:translate-y-0 duration-200 top-full">
+                          <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="admin-menu-button">
+                            {item.children.map((child) => (
+                              <Link
+                                key={child.name}
+                                to={child.href}
+                                className={classNames(
+                                  child.current
+                                    ? isDarkMode
+                                      ? 'bg-burrito-burgundy/20 text-burrito-cheese'
+                                      : 'bg-burrito-beige text-burrito-brown'
+                                    : isDarkMode
+                                      ? 'text-burrito-gray hover:bg-burrito-burgundy/20 hover:text-burrito-cheese'
+                                      : 'text-neutral-700 hover:bg-burrito-beige hover:text-burrito-brown',
+                                  'block px-4 py-2 text-sm'
+                                )}
+                                role="menuitem"
+                              >
+                                {child.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -348,8 +461,16 @@ const ModernNavbar = () => {
             </div>
           </div>
 
+          {open && (
+            <div 
+              className={styles.mobileMenuOverlay} 
+              onClick={() => close()}
+              aria-hidden="true"
+            />
+          )}
+
           <Disclosure.Panel className={styles.mobileMenu}>
-            <div className="space-y-1 px-2 pb-3 pt-2">
+            <div className="space-y-1 px-2 pb-3 pt-2">              
               {/* Search bar in mobile view */}
               <div className="mb-3 px-2">
                 <div className={`flex items-center rounded-md ${isDarkMode ? 'bg-burrito-charcoal/50' : 'bg-gray-100'} p-2`}>
@@ -367,24 +488,73 @@ const ModernNavbar = () => {
               {/* Navigation links in mobile view */}
               <div className="mb-3 border-b border-gray-200 dark:border-gray-700 pb-3">
                 {navigation.map((item) => (
-                  <DisclosureButton
-                    key={item.name}
-                    as={Link}
-                    to={item.href}
-                    className={classNames(
-                      item.current
-                        ? isDarkMode
-                          ? 'bg-burrito-burgundy text-burrito-beige'
-                          : 'bg-burrito-beige text-burrito-brown'
-                        : isDarkMode
-                          ? 'text-burrito-gray hover:bg-burrito-burgundy hover:text-burrito-beige'
-                          : 'text-neutral-600 hover:bg-burrito-beige hover:text-burrito-brown',
-                      'block rounded-md px-3 py-3 text-base font-medium w-full text-left mb-1'
+                  <div key={item.name}>
+                    {item.children ? (
+                      <button
+                        onClick={() => setAdminMenuOpen(!adminMenuOpen)}
+                        className={classNames(
+                          item.current
+                            ? isDarkMode
+                              ? 'bg-burrito-burgundy text-burrito-beige'
+                              : 'bg-burrito-beige text-burrito-brown'
+                            : isDarkMode
+                              ? 'text-burrito-gray hover:bg-burrito-burgundy hover:text-burrito-beige'
+                              : 'text-neutral-600 hover:bg-burrito-beige hover:text-burrito-brown',
+                          'block rounded-md px-3 py-3 text-base font-medium w-full text-left mb-1 flex items-center justify-between'
+                        )}
+                        aria-haspopup="true"
+                        aria-expanded={adminMenuOpen}
+                      >
+                        <span>{item.name}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 transition-transform duration-200 ${adminMenuOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    ) : (
+                      <DisclosureButton
+                        as={Link}
+                        to={item.href}
+                        className={classNames(
+                          item.current
+                            ? isDarkMode
+                              ? 'bg-burrito-burgundy text-burrito-beige'
+                              : 'bg-burrito-beige text-burrito-brown'
+                            : isDarkMode
+                              ? 'text-burrito-gray hover:bg-burrito-burgundy hover:text-burrito-beige'
+                              : 'text-neutral-600 hover:bg-burrito-beige hover:text-burrito-brown',
+                          'block rounded-md px-3 py-3 text-base font-medium w-full text-left mb-1'
+                        )}
+                        aria-current={item.current ? 'page' : undefined}
+                      >
+                        {item.name}
+                      </DisclosureButton>
                     )}
-                    aria-current={item.current ? 'page' : undefined}
-                  >
-                    {item.name}
-                  </DisclosureButton>
+                    
+                    {item.children && (
+                      <div className={`pl-4 mt-1 mb-2 space-y-1 transition-all duration-200 overflow-hidden ${adminMenuOpen ? 'max-h-60' : 'max-h-0'}`}>
+                        {item.children.map((child) => (
+                          <DisclosureButton
+                            key={child.name}
+                            as={Link}
+                            to={child.href}
+                            className={classNames(
+                              child.current
+                                ? isDarkMode
+                                  ? 'bg-burrito-burgundy/30 text-burrito-beige'
+                                  : 'bg-burrito-beige/80 text-burrito-brown'
+                                : isDarkMode
+                                  ? 'text-burrito-gray hover:bg-burrito-burgundy/20 hover:text-burrito-beige'
+                                  : 'text-neutral-600 hover:bg-burrito-beige/60 hover:text-burrito-brown',
+                              'block rounded-md px-3 py-2 text-sm font-medium w-full text-left border-l-2 border-neutral-200 dark:border-burrito-burgundy/30'
+                            )}
+                            aria-current={child.current ? 'page' : undefined}
+                          >
+                            {child.name}
+                          </DisclosureButton>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
               
