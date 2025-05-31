@@ -169,3 +169,4 @@ This will log in and return a JWT token plus user data if successful. The fixed 
 Test the book management functionality including the new cover image upload
 Verify that user profile editing works correctly
 Test the checkout and return book functionality
+cloudflared tunnel run wsburritotunnel
