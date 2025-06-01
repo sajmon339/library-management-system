@@ -27,11 +27,16 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=library_db;Username=admin;Password=admin
       - PORT=8001
-      - AllowedOrigins=*
+      # Configure CORS for local development
+      - AllowedOrigins__0=http://localhost:3000
+      - AllowedOrigins__1=http://frontend:80
+      - AllowedOrigins__2=*
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
       - ASPNETCORE_FORWARDEDHEADERS_KNOWNNETWORKS=
       - ASPNETCORE_FORWARDEDHEADERS_KNOWNPROXIES=
       - ASPNETCORE_HTTPS_PORT=443
+      # Add this to ensure URLs are generated correctly
+      - ASPNETCORE_URLS=http://+:8001
     volumes:
       - book_covers:/app/wwwroot/uploads/covers
     networks:
@@ -44,6 +49,8 @@ services:
       - "3000:80"
     depends_on:
       - api
+    environment:
+      - VITE_API_URL=http://api:8001/api
     volumes:
       - book_covers:/usr/share/nginx/uploads/covers:ro
     networks:

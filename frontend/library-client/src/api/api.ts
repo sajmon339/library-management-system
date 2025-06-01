@@ -1,7 +1,11 @@
 import axios from 'axios';
 
 // Use a relative URL which will work with the Nginx proxy
+// Make sure we respect HTTP/HTTPS protocol based on environment
 const BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
+// Log the API URL for debugging
+console.log(`API: Using base URL: ${BASE_URL}`);
 
 const api = axios.create({
   baseURL: BASE_URL,

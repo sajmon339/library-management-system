@@ -6,5 +6,15 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']
+  },
+  server: {
+    // Configure proxy for development
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8001',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   }
 })

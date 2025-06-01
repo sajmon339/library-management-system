@@ -18,8 +18,26 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.SetIsOriginAllowed(_ => true) // Required for Cloudflare tunnel
-              .AllowAnyMethod()
+        // Allow specific origins for development or all origins (*)
+        string[] origins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? 
+                           new string[] { "http://localhost:3000", "http://localhost:5173", "http://localhost:8080" };
+        
+        Console.WriteLine("Configuring CORS with the following origins:");
+        foreach (var origin in origins)
+        {
+            Console.WriteLine($" - {origin}");
+        }
+
+        if (origins.Length == 1 && origins[0] == "*")
+        {
+            policy.SetIsOriginAllowed(_ => true); // Allow any origin
+        }
+        else
+        {
+            policy.WithOrigins(origins); // Specific origins
+        }
+
+        policy.AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials()
               .WithExposedHeaders("Content-Disposition"); // For file downloads
@@ -259,8 +277,8 @@ app.UseForwardedHeaders();
 // Enable CORS before other middleware
 app.UseCors();
 
-// Configure HTTPS redirection
-app.UseHttpsRedirection();
+// Temporarily disable HTTPS redirection for testing
+// app.UseHttpsRedirection();
 
 // Enable static files to serve book covers
 app.UseStaticFiles();
