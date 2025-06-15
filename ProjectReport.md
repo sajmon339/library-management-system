@@ -1,5 +1,12 @@
 # Sprawozdanie z projektu - System Zarządzania Biblioteką
 
+## Autorzy projektu
+
+- Szymon Mikolajek - Nr 75691
+- Sebastian Krause - Nr 45647
+- Stefan Reszel - Nr 75696
+- Dariusz Niewdana
+
 ## Wprowadzenie
 
 Niniejsze sprawozdanie przedstawia projekt systemu do zarządzania biblioteką, który został zaimplementowany zgodnie z wymaganiami projektu zaliczeniowego. System został zbudowany w oparciu o język C# z wykorzystaniem architektury mikrousługowej, gdzie backend napisany jest w technologii .NET, frontend w React z Tailwind CSS, a baza danych to PostgreSQL.
